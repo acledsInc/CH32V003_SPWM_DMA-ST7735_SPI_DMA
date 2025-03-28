@@ -1,6 +1,7 @@
 # CH32V003_SPWM_DMA-ST7735_SPI_DMA
 
-Unit price 10 cents CH32V003F4U6 32 bit RISC-V TSSOP-20pin MPU generate 1 phase unipolar sine PWM pulse used TIM1 DMA and ST7735 SPI display used SPI DMA for WCH MounRiver Studio V1.92
+Unit price only 10 cents CH32V003F4U6 is 32 bit RISC-V TSSOP-20pin. 
+MPU generate 1 phase unipolar sine PWM pulse used TIM1 DMA and ST7735 SPI display used SPI DMA for WCH MounRiver Studio V1.92
 
 Normally need 4 PWM waveform for the 1 phase unipolar bridge driver of the DC-AC inverter.
 There are 4 pulse outputs of CH1, CH1N and CH2, CH2N from CH32V003 TIM1 CH1 and CH2 PWM outputs.
