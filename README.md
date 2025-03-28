@@ -13,7 +13,7 @@ ST7735 128x128 TFT LCD connections are pin1 VCC =3V3, pin2 GND =GND, pin3 CS =PC
 This source code made from TIM-DMA of CH32V003 EVK sample code and ST7735 library used platformIO code of https://github.com/limingjie/CH32V003-ST7735-Driver, But It does not working after build at platformIO in VSCode.
 
 My flash tool is WCH-LinkE Mini (GND, SWD, VCC connect to CH32V003F4U6 test board).
-Some time does not clearly spwm waveform continue generation, I have to toggle option SDI printf at Option of Flash Tool in MounRiver Studio.
+Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Option of Flash Tool in MounRiver Studio.
 
 I was modified st7735.c and st7735.h for the good working LCD display of ST7735 TFT LCD module.
 I attached some screen shot for ST7735 demo screen and TIM1 sine PWM output waveforms available in image folder.
