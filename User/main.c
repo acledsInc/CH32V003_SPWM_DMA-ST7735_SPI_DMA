@@ -16,14 +16,14 @@
 ///--------------------------------------------------------------|
 /// | CH32V003       | ST7735    | Description                   |
 //---------------------------------------------------------------|
-/// |                | 1 - VDD   | VDD                           |
+/// |                | 1 - VDD   | 3V3                           |
 /// |                | 2 - GND   | GND                           |
 /// | PC4            | 3 - CS    | SPI SS (Chip Select)          |
-/// | PC2            | 4 - RESET | Reset                         |
+/// |                | 4 - RESET | 3V3                           |
 /// | PC3            | 5 - RS    | DC (Data/Command)             |
 /// | PC6 (SPI MOSI) | 6 - SDA   | MOSI (Master Output Slave In) |
 /// | PC5 (SPI SCLK) | 7 - SCK   | SCLK (Serial Clock)           |
-/// |                | 8 - LED   | PWM to control brightness     |
+/// |                | 8 - LED   | 3V3                           |
 ///--------------------------------------------------------------|
 
 #include "st7735.h"
@@ -40,15 +40,15 @@
 #define TIM1_CH2CVR_ADDRESS 0x40012C38  // CCR2 for CH2
 #define TIM1_CH3CVR_ADDRESS 0x40012C3C  // CCR3 for CH3
 #define TIM1_CH4CVR_ADDRESS 0x40012C40  // CCR4 for CH4
-#define AFIO_PCFR1_ADDRESS 0x40010004
+//#define AFIO_PCFR1_ADDRESS 0x40010004
 
 /* Private variables */
 // 48MHz /(16 *100 *120 *2) = 120Hz
 #define TIM1_PSC    16  // Clock = 3MHz
 #define TIM1_ARR    100 // SPWM = 15KHz, Amplitude = 0~200
 
-#define buf_size 120
-// 180 /120 =1.5deg =for (u8 sine =0; sine <180; sine +=1.5);
+#define buf_size 120    // Sine Resolution
+// Sine amplitude = 0~100
 u16 sine_table[buf_size] = {
       2,  5,  7, 10, 12, 15, 17, 20, 22, 25,
      27, 30, 32, 34, 37, 39, 41, 44, 46, 48,
@@ -67,13 +67,12 @@ u16 sine_table[buf_size] = {
 //--------------------------------------------------------
 // Port of the Sine PWM
 //--------------------------------------------------------
-// Sine PWM Full Bridge Driver
 // PD2 =CH1 (0~180deg High Side)
 // PD0 =CH1N (0~180deg LOw Side)
 // PA1 =CH2 (180~360deg High Side)
 // PA2 =CH2N (180~360deg LOwh Side)
-// PC2 =BBRKIN (High for OCP)
-// LED =PC0 for interrupt of DMA Transfer Complete
+// PC2 =BRKIN (High for OCP)
+// PC1 =LED for DMA Transfer Status
 //--------------------------------------------------------
 
 #define DMA_LED GPIO_Pin_1      // PC1
@@ -220,15 +219,14 @@ void DMA1_Channel5_IRQHandler(void)
 
             // 180~360deg Sine PWM by Sine Table
             TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_table, buf_size);
-            //TIM_DMAConfig(TIM1, TIM_DMABase_CR2, buf_size);
         }
+
         else
         {
             GPIO_SetBits(GPIOC, DMA_LED);   // DMA LED on
 
             // 0~180deg Sine PWM by Sine Table
             TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_table, buf_size);
-            //TIM_DMAConfig(TIM1, TIM_DMABase_CR1, buf_size);
         }
         DMA_ClearITPendingBit(DMA1_IT_TC5);
     }
@@ -269,6 +267,7 @@ void TIM1_UP_IRQHandler(void)
    {
        //printf( "TIM1\r\n" );
    }
+   // Clear TIM1 flag
    TIM_ClearITPendingBit(TIM1, TIM_IT_Update );
 }
 
@@ -281,14 +280,13 @@ void TIM2_IRQHandler(void)
    {
        TIM_Cmd(TIM2, DISABLE);  // Stop TIM2
 
-       // this can be replaced with your code of flag
+       // this can be replaced with your code of flag set
        // so that in main's that flag can be handled
 
-       // Disable TIM2 INT
+       // Clear TIM2 flag
        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
    }
 }
-
 
 //---------------------------------------------------------------------
 // White Noise Generator State
@@ -319,7 +317,7 @@ uint8_t rand8(void)
 }
 
 //---------------------------------------------------------------------
-// draw random Point
+// draw random Dot
 //---------------------------------------------------------------------
 uint32_t frame = 0;
 uint16_t colors[] =
@@ -332,9 +330,15 @@ uint16_t colors[] =
 
 void draw_point()
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
 
-    frame = 50000;
+    tft_set_background_color(BLACK);
+    tft_set_color(PINK);
+    tft_set_cursor(0, 1);
+    tft_print("1. Random Dot");
+    Delay_Ms(1000);
+
+    frame = 10000;
     while (frame-- >0)
     {
         tft_draw_pixel(rand8() % LCD_WIDTH, rand8() % LCD_HEIGHT, colors[rand8() % 19]);
@@ -346,26 +350,15 @@ void draw_point()
 //---------------------------------------------------------------------
 void scan_hline()
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
 
-    frame = 50;
-    while (frame-- >0)
-    {
-        for (uint8_t i = 0; i < LCD_HEIGHT; i++)
-        {
-            tft_draw_line(i, 0, i, LCD_WIDTH, colors[rand8() % 19]);
-        }
-    }
-}
+    tft_set_background_color(BLACK);
+    tft_set_color(GREEN);
+    tft_set_cursor(0, 1);
+    tft_print("2. Horizon Line");
+    Delay_Ms(1000);
 
-//---------------------------------------------------------------------
-// Scan V-Line
-//---------------------------------------------------------------------
-void scan_vline()
-{
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
-
-    frame = 50;
+    frame = 20;
     while (frame-- >0)
     {
         for (uint8_t i = 0; i < LCD_WIDTH; i++)
@@ -376,11 +369,40 @@ void scan_vline()
 }
 
 //---------------------------------------------------------------------
-// draw_line
+// Scan V-Line
+//---------------------------------------------------------------------
+void scan_vline()
+{
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+
+    tft_set_background_color(BLACK);
+    tft_set_color(ORANGE);
+    tft_set_cursor(0, 1);
+    tft_print("3. Vertical Line");
+    Delay_Ms(1000);
+
+    frame = 20;
+    while (frame-- >0)
+    {
+        for (uint8_t i = 0; i < LCD_HEIGHT; i++)
+        {
+            tft_draw_line(i, 0, i, LCD_WIDTH, colors[rand8() % 19]);
+        }
+    }
+}
+
+//---------------------------------------------------------------------
+// Random Line
 //---------------------------------------------------------------------
 void draw_line(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+
+    tft_set_background_color(BLACK);
+    tft_set_color(CYAN);
+    tft_set_cursor(0, 1);
+    tft_print("4. Random Line");
+    Delay_Ms(1000);
 
     frame = 500;
     while (frame-- >0)
@@ -390,13 +412,19 @@ void draw_line(void)
 }
 
 //---------------------------------------------------------------------
-// scan rect
+// Centered Rectangle
 //---------------------------------------------------------------------
 void scan_rect(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
 
-    frame = 100;
+    tft_set_background_color(BLACK);
+    tft_set_color(YELLOW);
+    tft_set_cursor(0, 1);
+    tft_print("5. Center Rectangle");
+    Delay_Ms(1000);
+
+    frame = 25;
     while (frame-- >0)
     {
         for (uint8_t i = 0; i < 40; i++)
@@ -407,13 +435,19 @@ void scan_rect(void)
 }
 
 //---------------------------------------------------------------------
-// draw rect
+// Random Rectangle
 //---------------------------------------------------------------------
 void draw_rect(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
 
-    frame = 5000;
+    tft_set_background_color(BLACK);
+    tft_set_color(MAGENTA);
+    tft_set_cursor(0, 1);
+    tft_print("6. Random Rectangle");
+    Delay_Ms(1000);
+
+    frame = 3000;
     while (frame-- >0)
     {
         tft_draw_rect(rand8() % 128, rand8() % 128, 20, 20, colors[rand8() % 19]);
@@ -421,13 +455,19 @@ void draw_rect(void)
 }
 
 //---------------------------------------------------------------------
-// fill_rect
+// Fill Rectangle
 //---------------------------------------------------------------------
 void fill_rect(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
 
-    frame = 1000;
+    tft_set_background_color(BLACK);
+    tft_set_color(GREENYELLOW);
+    tft_set_cursor(0, 1);
+    tft_print("7. Fill Rectangle");
+    Delay_Ms(1000);
+
+    frame = 2000;
     while (frame-- >0)
     {
         tft_fill_rect(rand8() %128, rand8() %128, 20, 20, colors[rand8() %19]);
@@ -435,11 +475,17 @@ void fill_rect(void)
 }
 
 //---------------------------------------------------------------------
-// move rect.
+// Move Rectangle
 //---------------------------------------------------------------------
 void move_text(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+
+    tft_set_background_color(BLACK);
+    tft_set_color(WHITE);
+    tft_set_cursor(0, 1);
+    tft_print("8. Move Rectangle");
+    Delay_Ms(1000);
 
     frame =500;
     uint8_t x =0, y =0, step_x =1, step_y =1;
@@ -472,14 +518,10 @@ void move_text(void)
 //---------------------------------------------------------------------
 void demo_LCD(void)
 {
-    //tft_set_background_color(BLACK);
-    tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
-
     draw_point();
 
     scan_hline();
     scan_vline();
-
     draw_line();
 
     scan_rect();
@@ -490,8 +532,61 @@ void demo_LCD(void)
 }
 
 //---------------------------------------------------------------------
+// Init AD7 =PD4
+//---------------------------------------------------------------------
+#include "ch32v00x_adc.h"
+
+void init_ADC(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+    ADC_InitTypeDef  ADC_InitStructure = {0};
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+    RCC_ADCCLKConfig(RCC_PCLK2_Div8);
+
+    // AD7 =PD4
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    ADC_DeInit(ADC1);
+    ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+    ADC_InitStructure.ADC_ScanConvMode = DISABLE;
+    ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+    ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+    ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+    ADC_InitStructure.ADC_NbrOfChannel = 1;
+    ADC_Init(ADC1, &ADC_InitStructure);
+
+    ADC_DMACmd(ADC1, ENABLE);
+    ADC_Cmd(ADC1, ENABLE);
+
+    //ADC_BufferCmd(ADC1, DISABLE);    //disable buffer
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_9Cycles);
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+    Delay_Ms(50);
+    //ADC_SoftwareStartConvCmd(ADC1, DISABLE);
+}
+
+u16 read_ADC(void)
+{
+    u16 val;    // result of ADC_Channel_7
+
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_9Cycles);
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    val = ADC_GetConversionValue(ADC1);
+    return val;
+}
+
+//---------------------------------------------------------------------
 // Main program.
 //---------------------------------------------------------------------
+u16 result_ADC;
+char result_STR[5];
+
 int main(void)
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
@@ -509,15 +604,12 @@ int main(void)
     //printf("SystemClk:%d\r\n", SystemCoreClock);
     //printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
-
-    // TIM1 CH1, CH1N, CH2, CH2N, BKINGPIO_AFIODeInit(void);
-    // (psc, arr*2 , ccr) for 15.0KHz PWM / 122 Step =240Hz
+    // (psc, arr*2 , ccr) for 15.0KHz PWM / 120 Step =120Hz
     TIM1_PWMOut_Init(TIM1_ARR, TIM1_PSC -1, 0);
 
     // Sine PWM to CH1, CH1N,
     TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_table, buf_size);
     //TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_table, buf_size);
-    //TIM_DMAConfig(TIM1, TIM_DMABase_CR1, buf_size);
 
     TIM_DMACmd(TIM1, TIM_DMA_Update, ENABLE);   // Start DMA
     TIM_Cmd(TIM1, ENABLE);  //  Start TIM1
@@ -528,36 +620,57 @@ int main(void)
     //TIM_Cmd(TIM2, ENABLE);
     // check TIM2_IRQHandler(void)
 
+    // Init ST7735 TFT LCD
     tft_init();
+    Delay_Ms(100);
+
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_set_color(WHITE);
+    tft_set_background_color(BLACK);
+
+    demo_LCD();
+
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_set_background_color(BLACK);
+    tft_set_color(GREEN);
+    tft_set_cursor(0, 1);
+    tft_print("CH32V003 ST7735 Demo");
+
+    tft_set_color(WHITE);
+    tft_set_cursor(0, 16);
+    tft_print("1. Random dot");
+    tft_set_cursor(0, 24);
+    tft_print("2. Horizon line");
+    tft_set_cursor(0, 32);
+    tft_print("3. Vertical line");
+    tft_set_cursor(0, 40);
+    tft_print("4. Random line");
+    tft_set_cursor(0, 48);
+    tft_print("5. Center Rectangle");
+    tft_set_cursor(0, 56);
+    tft_print("6. Random Rectangle");
+    tft_set_cursor(0, 64);
+    tft_print("7. Fill rectangle");
+    tft_set_cursor(0, 72);
+    tft_print("8. Move Rectangle");
+
+    init_ADC();
     Delay_Ms(100);
 
     // Start of User Code.
     while(1)
     {
-        demo_LCD();
+        result_ADC =read_ADC();
+        sprintf(result_STR, "%4d", result_ADC, 4);
 
-        tft_fill_rect(0, 0, LCD_WIDTH, LCD_HEIGHT, BLACK);
         tft_set_color(WHITE);
-        tft_set_background_color(BLACK);
+        tft_set_cursor(0, 88);
+        tft_print("ADC1-CH7: ");
 
-        tft_set_cursor(0, 2);
-        tft_print("CH32V003 ST7735 Demo");
-        tft_set_cursor(0, 16);
-        tft_print("Random dot");
-        tft_set_cursor(0, 24);
-        tft_print("Horizon line");
-        tft_set_cursor(0, 32);
-        tft_print("Vertical line");
-        tft_set_cursor(0, 40);
-        tft_print("Random line");
-        tft_set_cursor(0, 48);
-        tft_print("Rectangle");
-        tft_set_cursor(0, 56);
-        tft_print("Fill rectangle");
-        tft_set_cursor(0, 64);
-        tft_print("Move Rectangle");
+        tft_set_color(YELLOW);
+        tft_set_cursor(54, 88);
+        tft_print(result_STR);
 
-        Delay_Ms(10000);
     }   // End ofUser Code.
 }   // End of main()
 //---------------------------------------------------------------------
