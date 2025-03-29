@@ -15,7 +15,7 @@ I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen
 This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at https://github.com/limingjie/CH32V003-ST7735-Driver, But It does not working after build for platformIO in VSCode.
 
 My flash tool is WCH-LinkE Mini (GND, SWD, VCC connect to CH32V003F4U6 test board).
-Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. (If test board not included 3.3V LDO in test board, Do not use power feed from USB-C port)
+Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. (If you connected 3.3V device without 3.3V LDO to test board, Do not use USB-C power on test board)
 
 I was modified st7735.c and st7735.h for the good working LCD display of ST7735 TFT LCD module.
 I attached some screen shot for ST7735 demo screen and TIM1 sine PWM output waveforms available in image folder.
