@@ -10,7 +10,7 @@ SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins a
 
 ST7735 128x128 TFT LCD connections are pin1 VCC =3V3, pin2 GND =GND, pin3 CS =PC4, pin4 RESET =3V3, pin5 DC =PC3, pin6 SDA =PC6, pin7 SCK =PC5, pin8 LED =3V3, if your ST7735 has pin9 SDO =not connect. I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen for the prepair SPWM duty control. (just read and display not implemented yet)  
 
-This source code made from TIM_DMA of CH32V003 EVK sample code and ST7735 library for platformIO at https://github.com/limingjie/CH32V003-ST7735-Driver, But It does not working after build for platformIO in VSCode.
+This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at https://github.com/limingjie/CH32V003-ST7735-Driver, But It does not working after build for platformIO in VSCode.
 
 My flash tool is WCH-LinkE Mini (GND, SWD, VCC connect to CH32V003F4U6 test board).
 Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. (If test board not included 3.3V LDO in test board, Do not use power feed from USB-C port)
