@@ -17,7 +17,7 @@ SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins a
 
 SPWM CH1 (0 - 180deg) and CH2 (180 - 360deg) Waveform After R-C (4K7 + 47nF) Intergrated.
 
-![SPWM-CH1N-PD0-Wave](https://github.com/user-attachments/assets/8c4f7a67-0c38-42f9-919e-c958178c8e07)
+![SPWM-CH1-PD2-Wave](https://github.com/user-attachments/assets/dda8d39b-4f17-4b54-8369-0064a6850676)
 
 TIM1 High Side Driver SPWM CH1 (PD2) Waveform.
 
