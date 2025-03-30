@@ -45,13 +45,13 @@ But It does not working with SPWM 4 pulses output after build for platformIO in 
 
 CH32V003F4P6 Development Board Schematic Diagram.
 
-My flash tool is WCH-LinkE-Mini (GND, SWD, VCC connect to CH32V003F4P6 test board).
+My flash tool is WCH-LinkE-Mini (GND, SWD, VCC) connect to CH32V003F4P6 test board (GND, PD1, VCC)
 Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. 
 (If you connected 3.3V device without 3.3V LDO to test board, Do not use USB-C power on test board)
 
 ![ch32v003f4u6-LinkE-Mini-pcb](https://github.com/user-attachments/assets/9f31f482-edbf-40e4-b789-150568d85ed8)
 
-WCH-LinkE-Mini PCB Product without Encloser.
+WCH-LinkE-Mini PCB Product without Encloser (WCH-LineE or WCH-LinkRV are Default Flash Tool at MounRiver Studio).
 
 I was modified st7735.c and st7735.h for the good working LCD display of ST7735 TFT LCD module as source code like standard HAL library instead mod non standard HAL libray style.
 I attached some screen shot for ST7735 demo screen and TIM1 sine PWM output waveforms available in image folder.
