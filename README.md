@@ -15,17 +15,18 @@ SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins a
 SPWM CH1 (0~180deg) and CH2 (180~360deg) Waveform After R-C (4K7 + 47nF) Intergrated.
 
 ![SPWM-CH1N-PD0-Wave](https://github.com/user-attachments/assets/8c4f7a67-0c38-42f9-919e-c958178c8e07)
-0~180deg High Side Driver SPWM CH1 (PD2) Waveform.
+TIM1 High Side Driver SPWM CH1 (PD2) Waveform.
 
 ![SPWM-CH1N-PD0-Wave](https://github.com/user-attachments/assets/d351f686-6bd4-417a-93d7-0c9b21f16232)
-0~180deg Low Side Driver SPWM CH1N (PD0) Waveform.
+TIM1 Low Side Driver SPWM CH1N (PD0) Waveform.
 
 ST7735 128x128 TFT LCD connections are pin1 VCC =3V3, pin2 GND =GND, pin3 CS =PC4, pin4 RESET =3V3, pin5 DC =PC3, pin6 SDA =PC6, pin7 SCK =PC5, pin8 LED =3V3, if your ST7735 has pin9 SDO =not connect.
 
 ![ch32v003-st7735-graphic-demo](https://github.com/user-attachments/assets/2b6b54f7-cbb7-4d21-8d7b-d96b9b8844a6)
 CH32V003+ST7735 Demo Graphic of Centered Rectagle.
 
-I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen for the prepair SPWM duty control. (just read and display without SPWM duty control, feedback control not implemented yet, see screen shot ST7735-demo-LCD in image folder)
+I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen for the prepair SPWM duty control. 
+(just read and display without SPWM duty control, feedback control not implemented yet).
 
 ![ST7735-Demo-Screen](https://github.com/user-attachments/assets/59abe810-4266-42f3-a2cc-388b9d58cfca)
 CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value at Last Line 
