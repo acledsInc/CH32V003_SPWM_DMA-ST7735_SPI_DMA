@@ -15,7 +15,7 @@ SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins a
 
 ![CH32V003-TIM1-SPWM-Output](https://github.com/user-attachments/assets/847d9bcb-5ec9-4392-903b-4ec198b7937d)
 
-SPWM CH1 (0~180deg) and CH2 (180~360deg) Waveform After R-C (4K7 + 47nF) Intergrated.
+SPWM CH1 (0 - 180deg) and CH2 (180 - 360deg) Waveform After R-C (4K7 + 47nF) Intergrated.
 
 ![SPWM-CH1N-PD0-Wave](https://github.com/user-attachments/assets/8c4f7a67-0c38-42f9-919e-c958178c8e07)
 
