@@ -26,6 +26,14 @@ TIM1 High Side Driver SPWM CH1 (PD2) Waveform.
 
 TIM1 Low Side Driver SPWM CH1N (PD0) Waveform.
 
+![intergrated-pd2+pa1-wave](https://github.com/user-attachments/assets/920dce32-cd3b-4efb-bc16-92ac689e972a)
+
+Intergrated TIM1 High Side SPWM (PD2) and TIM1 CH2 (PA1) High Side waveform.
+
+![intergrated-pd2+pa2-wave](https://github.com/user-attachments/assets/fc19f20f-d2bb-4c9b-a646-12534a298f61)
+
+Intergrated TIM1 High Side SPWM (PD2) and TIM1 CH2N (PA2) Low Side waveform.
+
 ST7735 128x128 TFT LCD connections are pin1 VCC =3V3, pin2 GND =GND, pin3 CS =PC4, pin4 RESET =3V3, pin5 DC =PC3, pin6 SDA =PC6, pin7 SCK =PC5, pin8 LED =3V3, if your ST7735 has pin9 SDO =not connect.
 
 ![ch32v003-st7735-graphic-demo](https://github.com/user-attachments/assets/2b6b54f7-cbb7-4d21-8d7b-d96b9b8844a6)
