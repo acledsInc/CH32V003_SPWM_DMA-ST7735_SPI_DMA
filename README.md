@@ -1,6 +1,6 @@
 # CH32V003_SPWM_DMA-ST7735_SPI_DMA
 
-Unit price only 10 cents CH32V003F4U6 is 32 bit RISC-V MPU by TSSOP-20pin with 48MHz internal clock speed. 
+Unit price only 10 cents CH32V003F4P6 is 32 bit RISC-V MPU by TSSOP-20pin with 48MHz internal clock speed. 
 MPU can be generate single phase sine PWM pulses whith TIM1 DMA and ST7735 SPI display with SPI DMA at WCH MounRiver Studio V1.92,
 CH32V003 MPU has advanced TIM1, TIM2 and independent DMA groups are almost compatible STM32F030 hardware performance.  
 
@@ -16,7 +16,7 @@ I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen
 This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at https://github.com/limingjie/CH32V003-ST7735-Driver,
 But It does not working with SPWM 4 pulses output after build for platformIO in VSCode.
 
-My flash tool is WCH-LinkE Mini (GND, SWD, VCC connect to CH32V003F4U6 test board).
+My flash tool is WCH-LinkE Mini (GND, SWD, VCC connect to CH32V003F4P6 test board).
 Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. 
 (If you connected 3.3V device without 3.3V LDO to test board, Do not use USB-C power on test board)
 
