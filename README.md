@@ -51,7 +51,7 @@ Some time does not clearly SPWM waveform continue generation, I have to toggle o
 
 ![ch32v003f4u6-LinkE-Mini-pcb](https://github.com/user-attachments/assets/9f31f482-edbf-40e4-b789-150568d85ed8)
 
-WCH-LinkE-Mini PCB Product without Encloser (WCH-LineE or WCH-LinkRV are Default Flash Tool at MounRiver Studio).
+WCH-LinkE-Mini PCB Product without Encloser (WCH-LinkE or WCH-LinkRV are Default Flash Tool at MounRiver Studio).
 
 I was modified st7735.c and st7735.h for the good working LCD display of ST7735 TFT LCD module as source code like standard HAL library instead mod non standard HAL libray style.
 I attached some screen shot for ST7735 demo screen and TIM1 sine PWM output waveforms available in image folder.
