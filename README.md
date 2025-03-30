@@ -11,7 +11,7 @@ CH32V003F4P6 GPIO and AF Map. (PC2 can be use external break in signal to stop a
 4 PWM pulses are usualy required for the single phase unipolar bridge driver of the DC-AC inverter.
 There are 4 pulse outputs of CH1, CH1N and CH2, CH2N from CH32V003 TIM1-CH1 and TIM1-CH2 PWM2 outputs.
 
-SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins are CH1 =PD2, CH1N =PD0, CH2 =PA1, CH2N =PA2, BRKIN =PC2 
+SPWM made by 120 step 15KHz sine table and TIM1 60Hz PWM2 output port pins are CH1 =PD2, CH1N =PD0, CH2 =PA1, CH2N =PA2, BRKIN =PC2 
 (High for the OCP -Over Current Protection-) and DMA status LED =PC1 for the debugging. (TIM1 used 20us dead time of center aligned PWM2 output.)
 
 ![CH32V003-TIM1-SPWM-Output](https://github.com/user-attachments/assets/847d9bcb-5ec9-4392-903b-4ec198b7937d)
