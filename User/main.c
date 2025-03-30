@@ -44,7 +44,7 @@
 
 /* Private variables */
 // 48MHz /(16 *100 *120 *2) = 120Hz
-#define TIM1_PSC    16  // Clock = 3MHz
+#define TIM1_PSC    8   // Clock = 3MHz
 #define TIM1_ARR    200 // SPWM = 15KHz, Amplitude = 0~200
 
 #define buf_size 120    // Sine Resolution
