@@ -1,7 +1,8 @@
 # CH32V003_SPWM_DMA-ST7735_SPI_DMA
 
-Unit price only 10 cents CH32V003F4U6 is 32 bit RISC-V TSSOP-20pin. 
+Unit price only 10 cents CH32V003F4U6 is 32 bit RISC-V MPU by TSSOP-20pin with 48MHz internal clock speed. 
 MPU generate 1 phase unipolar sine PWM pulse used TIM1 DMA and ST7735 SPI display used SPI DMA for WCH MounRiver Studio V1.92
+CH32V003 has advanced TIM1, TIM2 and indepandent DMA groups are almost compatible STM32F030 hardware performance.  
 
 4 PWM pulses are usualy required for the single phase unipolar bridge driver of the DC-AC inverter.
 There are 4 pulse outputs of CH1, CH1N and CH2, CH2N from CH32V003 TIM1-CH1 and TIM1-CH2 PWM2 outputs.
