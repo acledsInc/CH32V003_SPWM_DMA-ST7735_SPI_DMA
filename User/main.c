@@ -611,11 +611,11 @@ void read_ADC(void)
     tft_set_cursor(0, 88);
     tft_print("ADC1-CH7: ");
 
-    // erase value area
-    tft_fill_rect(54, 88, 128, 16, BLACK);
-    // binary convert to decimal
-    sprintf(disp_str, "%d", bin_val, 4);
+    // erase value area (not use right align)
+    //tft_fill_rect(54, 88, 128, 16, BLACK);
 
+    // binary convert to decimal as right align
+    sprintf(disp_str, "%4d", bin_val);
     tft_set_color(YELLOW);
     tft_set_cursor(54, 88);
     tft_print(disp_str);
