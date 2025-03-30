@@ -6,12 +6,13 @@ CH32V003 MPU has advanced TIM1, TIM2 and independent DMA groups are almost compa
 
 ![ch32v003f4u6-tssop20-dev-kit-pcb](https://github.com/user-attachments/assets/070066ac-698e-4078-a72c-f93470adbbd0)
 
-CH32V003F4P6 GPIO and AF Configuration Map. (PC2 can be use external break in signal to stop all PWM output when detect over current load.)
+CH32V003F4P6 GPIO and AF Map. (PC2 can be use external break in signal to stop all PWM output when detect over current load.)
 
 4 PWM pulses are usualy required for the single phase unipolar bridge driver of the DC-AC inverter.
 There are 4 pulse outputs of CH1, CH1N and CH2, CH2N from CH32V003 TIM1-CH1 and TIM1-CH2 PWM2 outputs.
 
-SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins are CH1 =PD2, CH1N =PD0, CH2 =PA1, CH2N =PA2, BRKIN =PC2 (High for the OCP -Over Current Protection-) and DMA status LED =PC1 for the debugging. (TIM1 used 20us dead time of center aligned PWM2 output)
+SPWM made by 120 step 15KHz sine table and TIM1 60Hz unipolar output port pins are CH1 =PD2, CH1N =PD0, CH2 =PA1, CH2N =PA2, BRKIN =PC2 
+(High for the OCP -Over Current Protection-) and DMA status LED =PC1 for the debugging. (TIM1 used 20us dead time of center aligned PWM2 output.)
 
 ![CH32V003-TIM1-SPWM-Output](https://github.com/user-attachments/assets/847d9bcb-5ec9-4392-903b-4ec198b7937d)
 
@@ -51,7 +52,7 @@ Some time does not clearly SPWM waveform continue generation, I have to toggle o
 
 ![ch32v003f4u6-LinkE-Mini-pcb](https://github.com/user-attachments/assets/9f31f482-edbf-40e4-b789-150568d85ed8)
 
-WCH-LinkE-Mini PCB Product without Encloser (WCH-LinkE or WCH-LinkRV are Default Flash Tool at MounRiver Studio).
+WCH-LinkE-Mini PCB Product without Encloser. (WCH-LinkE or WCH-LinkRV are Default Flash Tool at MounRiver Studio.)
 
 I was modified st7735.c and st7735.h for the good working LCD display of ST7735 TFT LCD module as source code like standard HAL library instead mod non standard HAL libray style.
 I attached some screen shot for ST7735 demo screen and TIM1 sine PWM output waveforms available in image folder.
