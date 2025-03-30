@@ -45,11 +45,27 @@
 /* Private variables */
 // 48MHz /(16 *100 *120 *2) = 120Hz
 #define TIM1_PSC    16  // Clock = 3MHz
-#define TIM1_ARR    100 // SPWM = 15KHz, Amplitude = 0~200
+#define TIM1_ARR    200 // SPWM = 15KHz, Amplitude = 0~200
 
 #define buf_size 120    // Sine Resolution
-// Sine amplitude = 0~100
-u16 sine_table[buf_size] = {
+// Sine amplitude = 0~100 (reference)
+u16 sine_tbl[buf_size] = {
+      2,  5,  7, 10, 12, 15, 17, 20, 22, 25,
+     27, 30, 32, 34, 37, 39, 41, 44, 46, 48,
+     50, 52, 54, 57, 59, 61, 63, 65, 67, 68,
+     70, 72, 74, 75, 77, 79, 81, 83, 84, 85,
+     86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+     96, 96, 97, 97, 98, 99, 99, 99,100,100,
+    100, 99, 99, 99, 98, 97, 97, 96, 96, 95,
+     94, 93, 92, 91, 90, 89, 88, 87, 86, 85,
+     84, 83, 81, 79, 77, 75, 74, 72, 70, 68,
+     67, 65, 63, 61, 59, 57, 54, 52, 50, 48,
+     46, 44, 41, 39, 37, 34, 32, 30, 27, 25,
+     22, 20, 17, 15, 12, 10,  7,  5,  2,  0
+};
+
+// sine amplitude = 0~200 (feedback)
+u16 sine_fdb[buf_size] = {
       2,  5,  7, 10, 12, 15, 17, 20, 22, 25,
      27, 30, 32, 34, 37, 39, 41, 44, 46, 48,
      50, 52, 54, 57, 59, 61, 63, 65, 67, 68,
@@ -218,7 +234,7 @@ void DMA1_Channel5_IRQHandler(void)
             GPIO_ResetBits(GPIOC, DMA_LED);  // DMA LED off
 
             // 180~360deg Sine PWM by Sine Table
-            TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_table, buf_size);
+            TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_fdb, buf_size);
         }
 
         else
@@ -226,7 +242,7 @@ void DMA1_Channel5_IRQHandler(void)
             GPIO_SetBits(GPIOC, DMA_LED);   // DMA LED on
 
             // 0~180deg Sine PWM by Sine Table
-            TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_table, buf_size);
+            TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_fdb, buf_size);
         }
         DMA_ClearITPendingBit(DMA1_IT_TC5);
     }
@@ -487,7 +503,7 @@ void move_text(void)
     tft_print("8. Move Rectangle");
     Delay_Ms(1000);
 
-    frame =500;
+    frame =200;
     uint8_t x =0, y =0, step_x =1, step_y =1;
     while (frame-- >0)
     {
@@ -563,17 +579,22 @@ void init_ADC(void)
     ADC_Cmd(ADC1, ENABLE);
 
     //ADC_BufferCmd(ADC1, DISABLE);    //disable buffer
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_9Cycles);
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_30Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
     Delay_Ms(50);
     //ADC_SoftwareStartConvCmd(ADC1, DISABLE);
 }
 
-u16 read_ADC(void)
+#include <stdio.h>
+u16 bin_val;
+float fdb_val;
+char disp_str[5];
+
+u16 get_ADC(void)
 {
     u16 val;    // result of ADC_Channel_7
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_9Cycles);
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_30Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
@@ -581,12 +602,30 @@ u16 read_ADC(void)
     return val;
 }
 
+void read_ADC(void)
+{
+    bin_val =get_ADC();
+    fdb_val =(float)(bin_val);
+
+    tft_set_color(WHITE);
+    tft_set_cursor(0, 88);
+    tft_print("ADC1-CH7: ");
+
+    // erase value area
+    tft_fill_rect(54, 88, 128, 16, BLACK);
+    // binary convert to decimal
+    sprintf(disp_str, "%d", bin_val, 4);
+
+    tft_set_color(YELLOW);
+    tft_set_cursor(54, 88);
+    tft_print(disp_str);
+
+    Delay_Ms(50);
+}
+
 //---------------------------------------------------------------------
 // Main program.
 //---------------------------------------------------------------------
-u16 result_ADC;
-char result_STR[5];
-
 int main(void)
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
@@ -608,12 +647,11 @@ int main(void)
     TIM1_PWMOut_Init(TIM1_ARR, TIM1_PSC -1, 0);
 
     // Sine PWM to CH1, CH1N,
-    TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_table, buf_size);
-    //TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_table, buf_size);
+    TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_fdb, buf_size);
+    //TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_fdb buf_size);
 
     TIM_DMACmd(TIM1, TIM_DMA_Update, ENABLE);   // Start DMA
     TIM_Cmd(TIM1, ENABLE);  //  Start TIM1
-    //Delay_Us(1666);         // delay 1.666ms
 
     // Start TIM2 for user timer
     //TIM2_INT_Init(USER_DELAY -1, 48 -1);   // TIM2 Clock =1us
@@ -660,16 +698,7 @@ int main(void)
     // Start of User Code.
     while(1)
     {
-        result_ADC =read_ADC();
-        sprintf(result_STR, "%4d", result_ADC, 4);
-
-        tft_set_color(WHITE);
-        tft_set_cursor(0, 88);
-        tft_print("ADC1-CH7: ");
-
-        tft_set_color(YELLOW);
-        tft_set_cursor(54, 88);
-        tft_print(result_STR);
+        read_ADC();
 
     }   // End ofUser Code.
 }   // End of main()
