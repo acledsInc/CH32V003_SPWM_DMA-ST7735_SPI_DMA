@@ -305,6 +305,42 @@ void TIM2_IRQHandler(void)
 }
 
 //---------------------------------------------------------------------
+// init SPWM waveform
+// SPWM table -> DMA1-CH5 -> TIM1-CCP -> SPWM output
+// DMA1_Channel5_IRQHandler -> Switch transfer to CCP1 or CCCP2
+//---------------------------------------------------------------------
+void init_SPWM(void)
+{
+    // (psc, arr*2 , ccr) for 15.0KHz PWM / 120 Step =120Hz
+    TIM1_PWMOut_Init(TIM1_ARR, TIM1_PSC -1, 0);
+
+    // Sine PWM to CH1, CH1N,
+    TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_fdb, buf_size);
+    //TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_fdb buf_size);
+
+    TIM_DMACmd(TIM1, TIM_DMA_Update, ENABLE);   // Start DMA
+    TIM_Cmd(TIM1, ENABLE);  //  Start TIM1
+}
+
+//---------------------------------------------------------------------
+// init ST7735 and clear screen
+//---------------------------------------------------------------------
+void init_LCD()
+{
+    // ST7735 library =st7735.h
+    tft_init();
+    Delay_Ms(100);
+
+    // clear screen
+    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+
+    // set text color
+    tft_set_color(WHITE);
+    // set text bg color
+    tft_set_background_color(BLACK);
+}
+
+//---------------------------------------------------------------------
 // White Noise Generator State
 //---------------------------------------------------------------------
 #define NOISE_BITS      8
@@ -483,7 +519,7 @@ void fill_rect(void)
     tft_print("7. Fill Rectangle");
     Delay_Ms(1000);
 
-    frame = 2000;
+    frame = 2500;
     while (frame-- >0)
     {
         tft_fill_rect(rand8() %128, rand8() %128, 20, 20, colors[rand8() %19]);
@@ -503,7 +539,7 @@ void move_text(void)
     tft_print("8. Move Rectangle");
     Delay_Ms(1000);
 
-    frame =200;
+    frame =250;
     uint8_t x =0, y =0, step_x =1, step_y =1;
     while (frame-- >0)
     {
@@ -607,7 +643,7 @@ void read_ADC(void)
     bin_val =get_ADC();
     fdb_val =(float)(bin_val);
 
-    tft_set_color(WHITE);
+    tft_set_color(GREEN);
     tft_set_cursor(0, 88);
     tft_print("ADC1-CH7: ");
 
@@ -619,55 +655,10 @@ void read_ADC(void)
     tft_set_color(YELLOW);
     tft_set_cursor(54, 88);
     tft_print(disp_str);
-
-    Delay_Ms(50);
 }
 
-//---------------------------------------------------------------------
-// Main program.
-//---------------------------------------------------------------------
-int main(void)
+void disp_MENU(void)
 {
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-    SystemCoreClockUpdate();    // HSI 48MHz
-    Delay_Init();
-
-    // all clear AF of GPIO
-    GPIO_AFIODeInit();
-
-#if (SDI_PRINT == SDI_PR_OPEN)
-    SDI_Printf_Enable();
-#else
-    USART_Printf_Init(115200);
-#endif
-    //printf("SystemClk:%d\r\n", SystemCoreClock);
-    //printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
-
-    // (psc, arr*2 , ccr) for 15.0KHz PWM / 120 Step =120Hz
-    TIM1_PWMOut_Init(TIM1_ARR, TIM1_PSC -1, 0);
-
-    // Sine PWM to CH1, CH1N,
-    TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_fdb, buf_size);
-    //TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH2CVR_ADDRESS, (u32)sine_fdb buf_size);
-
-    TIM_DMACmd(TIM1, TIM_DMA_Update, ENABLE);   // Start DMA
-    TIM_Cmd(TIM1, ENABLE);  //  Start TIM1
-
-    // Start TIM2 for user timer
-    //TIM2_INT_Init(USER_DELAY -1, 48 -1);   // TIM2 Clock =1us
-    //TIM_Cmd(TIM2, ENABLE);
-    // check TIM2_IRQHandler(void)
-
-    // Init ST7735 TFT LCD
-    tft_init();
-    Delay_Ms(100);
-
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
-    tft_set_color(WHITE);
-    tft_set_background_color(BLACK);
-
-    demo_LCD();
-
     tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
     tft_set_background_color(BLACK);
     tft_set_color(GREEN);
@@ -691,16 +682,54 @@ int main(void)
     tft_print("7. Fill rectangle");
     tft_set_cursor(0, 72);
     tft_print("8. Move Rectangle");
+}
+
+//---------------------------------------------------------------------
+// Main program.
+//---------------------------------------------------------------------
+int main(void)
+{
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    SystemCoreClockUpdate();    // HSI 48MHz
+    Delay_Init();
+
+    // all clear AF of GPIO
+    GPIO_AFIODeInit();
+
+#if (SDI_PRINT == SDI_PR_OPEN)
+    SDI_Printf_Enable();
+#else
+    USART_Printf_Init(115200);
+#endif
+    //printf("SystemClk:%d\r\n", SystemCoreClock);
+    //printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+
+    init_SPWM();
+
+    // Start TIM2 for user timer
+    //TIM2_INT_Init(USER_DELAY -1, 48 -1);   // TIM2 Clock =1us
+    //TIM_Cmd(TIM2, ENABLE);
+    // check TIM2_IRQHandler(void)
+
+    // Init ST7735 TFT LCD
+    init_LCD();
+
+    demo_LCD();
+
+    disp_MENU();
 
     init_ADC();
-    Delay_Ms(100);
 
     // Start of User Code.
     while(1)
     {
-        read_ADC();
+        read_ADC();     // read ADC and Display
+        Delay_Ms(50);   // Display time
 
-    }   // End ofUser Code.
+        // start user code
+
+        // end user code
+    }
 }   // End of main()
 //---------------------------------------------------------------------
 
