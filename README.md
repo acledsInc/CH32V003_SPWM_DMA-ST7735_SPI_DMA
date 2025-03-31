@@ -16,23 +16,23 @@ SPWM made by 120 step 15KHz sine table and TIM1 60Hz PWM2 output port pins are C
 
 ![CH32V003-TIM1-SPWM-Output](https://github.com/user-attachments/assets/847d9bcb-5ec9-4392-903b-4ec198b7937d)
 
-SPWM CH1 (0 - 180deg) and CH2 (180 - 360deg) Waveform After R-C (4K7 + 47nF) Intergrated.
+R-C (4K7 + 47nF) Intergrated TIM1-CH1 (0 - 180deg) and TIM1-CH2 (180 - 360deg) SPWM Waveform.
 
 ![SPWM-CH1-PD2-Wave](https://github.com/user-attachments/assets/dda8d39b-4f17-4b54-8369-0064a6850676)
 
-Intergrated TIM1-CH1 High Side SPWM (PD2) and TIM1-CH1 High Side Driver SPWM CH1 (PD2) Waveform. (Duty 100%)
+Intergrated TIM1-CH1 (PD2) High Side SPWM and TIM1-CH1 (PD2) High Side SPWM Waveform. (Duty 100%)
 
 ![SPWM-CH1N-PD0-Wave](https://github.com/user-attachments/assets/d351f686-6bd4-417a-93d7-0c9b21f16232)
 
-Intergrated TIM1-CH1 High Side SPWM (PD2) and TIM1-CH1 Low Side Driver SPWM CH1N (PD0) Waveform. (Duty 100%)
+Intergrated TIM1-CH1 (PD2) High Side SPWM and TIM1-CH1N (PD0) Low Side SPWM Waveform. (Duty 100%)
 
 ![intergrated-pd2+pa1-wave](https://github.com/user-attachments/assets/920dce32-cd3b-4efb-bc16-92ac689e972a)
 
-Intergrated TIM1-CH1 High Side SPWM (PD2) and TIM1-CH2 (PA1) High Side waveform. (Duty 50%)
+Intergrated TIM1-CH1 (PD2) High Side SPWM and TIM1-CH2 (PA1) High Side SPWM waveform. (Duty 50%)
 
 ![intergrated-pd2+pa2-wave](https://github.com/user-attachments/assets/fc19f20f-d2bb-4c9b-a646-12534a298f61)
 
-Intergrated TIM1-CH1 High Side SPWM (PD2) and TIM1-CH2N (PA2) Low Side waveform. (Duty 50%)
+Intergrated TIM1-CH1 (PD2) High Side SPWM and TIM1-CH2N (PA2) Low Side SPWM waveform. (Duty 50%)
 
 ST7735 128x128 TFT LCD connections are pin1 VCC =3V3, pin2 GND =GND, pin3 CS =PC4, pin4 RESET =3V3, pin5 DC =PC3, pin6 SDA =PC6, pin7 SCK =PC5, pin8 LED =3V3, if your ST7735 has pin9 SDO =not connect.
 
