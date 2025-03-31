@@ -1,6 +1,6 @@
 # CH32V003_SPWM_DMA-ST7735_SPI_DMA
 
-Unit price only 10 cents CH32V003F4P6 is 32 bit RISC-V MPU by TSSOP-20pin with 48MHz internal clock speed. 
+Unit price only 10 cents CH32V003F4P6 is 32 bit RISC-V MPU by TSSOP-20pin with 48MHz internal clock. 
 MPU can be generate single phase sine PWM pulses whith TIM1 DMA and ST7735 SPI display with SPI DMA at WCH MounRiver Studio V1.92,
 CH32V003 MPU has advanced TIM1, TIM2 and independent DMA groups are almost compatible STM32F030 hardware performance.  
 
