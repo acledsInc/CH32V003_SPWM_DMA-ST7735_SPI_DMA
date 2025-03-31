@@ -51,8 +51,9 @@ I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen
 
 CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value (0 - 1023) to Display (Yellow) at Last Line 
 
-This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at https://github.com/limingjie/CH32V003-ST7735-Driver,
-But It does not working with SPWM 4 pulses output after build for platformIO in VSCode.
+This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at github.com 
+ limingjie's CH32V003-ST7735-Driver. 
+ But It does not working with SPWM 4 pulses output after build for platformIO in VSCode.
 
 ![ch32v003f4u6-tssop20-dev-kit-sch](https://github.com/user-attachments/assets/0c5feaf8-160c-4663-a4fd-11452de821da)
 
