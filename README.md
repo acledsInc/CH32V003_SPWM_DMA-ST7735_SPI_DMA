@@ -58,7 +58,7 @@ This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 librar
 
 ![ch32v003f4u6-tssop20-dev-kit-sch](https://github.com/user-attachments/assets/0c5feaf8-160c-4663-a4fd-11452de821da)
 
-CH32V003F4P6 Development Board Schematic Diagram.
+CH32V003F4P6 Development Board Schematic Diagram. (MPU board included 3.3V LDO and good working RESET switch)
 
 My flash tool is WCH-LinkE-Mini (GND, SWD, VCC) connect to CH32V003F4P6 test board (GND, PD1, VCC)
 Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. 
