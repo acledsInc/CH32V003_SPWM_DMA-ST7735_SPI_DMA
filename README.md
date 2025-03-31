@@ -40,6 +40,10 @@ ST7735 128x128 TFT LCD connections are pin1 VCC =3V3, pin2 GND =GND, pin3 CS =PC
 
 CH32V003+ST7735 Demo Graphic of Centered Rectagle.
 
+![ch32v003-st7735-random-line-demo](https://github.com/user-attachments/assets/89f824d2-ab72-4dd9-b43a-6aebba61ace2)
+
+CH32V003+ST7735 Demo Grphic of Random Line.
+
 I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen for the prepair SPWM duty control. 
 (just read and display without SPWM duty control, feedback control not implemented yet).
 
