@@ -68,7 +68,7 @@ Some time does not clearly SPWM waveform continue generation, I have to toggle o
 
 WCH-LinkE-Mini PCB Product without Encloser. (WCH-LinkE or WCH-LinkRV are Default Flash Tool at MounRiver Studio.)
 This tool, almost all WCH microcontrollers (CH5xx, CH6xx, CH32Fxxx, CH32Vxxx, CH32Xxxx, and CH32Lxxx) which have a factory-builtin bootloader (v2.x.x) can be flashed via USB.
-And this tool can be support DAP-Tool at Keil-UV5 for standard ARM CPU flash like STM32Fxxx seriese.
+And this tool can be support DAP-Link at Keil-UV5 for standard ARM CPU flash like STM32Fxxx seriese.
 
 I was modified st7735.c and st7735.h for the display of ST7735 TFT LCD with TIM1 SPWM output by C code like standard HAL library style instead non standard HAL libray style.
 I attached some screen shot for ST7735 demo screen and TIM1 sine PWM output waveforms available in image folder.
