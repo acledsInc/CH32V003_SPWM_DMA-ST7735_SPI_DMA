@@ -63,7 +63,7 @@ My flash tool is WCH-LinkE-Mini (GND, SWD, VCC) connect to CH32V003F4P6 test boa
 Some time does not clearly SPWM waveform continue generation, I have to toggle option SDI printf at Configure of Flash Tool in MounRiver Studio. 
 (If you connected 3.3V device without 3.3V LDO to test board, Do not use USB-C power on test board)
 
-![ch32v003f4u6-LinkE-Mini-pcb](https://github.com/user-attachments/assets/9f31f482-edbf-40e4-b789-150568d85ed8)
+![ch32v003f4u6-LinkE-Mini-pcb](https://github.com/user-attachments/assets/626fa934-1f40-4e87-96df-64660c4320e2)
 
 WCH-LinkE-Mini PCB Product without Encloser. (WCH-LinkE or WCH-LinkRV are Default Flash Tool at MounRiver Studio.)
 
