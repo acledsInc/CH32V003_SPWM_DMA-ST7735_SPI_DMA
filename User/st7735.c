@@ -31,7 +31,7 @@
 #define FONT_HEIGHT 7  // Font height
 
 // CH32V003 Pin Definitions
-#define SPI_RESET 2  // PC2
+#define SPI_RESET 2  // PC2 // not used
 #define SPI_DC    3  // PC3
 #define SPI_CS    4  // PC4
 #define SPI_SCLK  5  // PC5
@@ -101,14 +101,6 @@ static void SPI_init()
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
-    // RESET =PC2 not used
-    /*
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-    */
-
     // DC =PC3
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -150,7 +142,10 @@ static void SPI_init()
     // Enable DMA peripheral
     RCC->AHBPCENR |= RCC_AHBPeriph_DMA1;
 
-    // Config DMA for SPI TX
+    // Clear previous configuration
+    DMA1_Channel3->CFGR = 0;    // added 250301
+
+    // Config DMA for SPI TX in Circular Mode
     DMA1_Channel3->CFGR = DMA_DIR_PeripheralDST          // Bit 4     - Read from memory
                           | DMA_Mode_Circular            // Bit 5     - Circulation mode
                           | DMA_PeripheralInc_Disable    // Bit 6     - Peripheral address no change
@@ -159,24 +154,7 @@ static void SPI_init()
                           | DMA_MemoryDataSize_Byte      // Bit 10-11 - 8-bit data
                           | DMA_Priority_VeryHigh        // Bit 12-13 - Very high priority
                           | DMA_M2M_Disable;             // Bit 14    - Disable memory to memory mode
-
-    /*
-    DMA_DeInit(DMA1_Channel3);
-    DMA_InitStructure.DMA_PeripheralBaseAddr = &SPI1->DATAR;
-    DMA_InitStructure.DMA_MemoryBaseAddr = (u32)buffer;
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-    DMA_InitStructure.DMA_BufferSize =ST7735_WIDTH << 1;
-    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-    DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
-    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-    DMA_Init(DMA1_Channel3, &DMA_InitStructure);
-    DMA_Cmd(DMA1_Channel3, ENABLE);
-    */
-
+    // Set Peripheral address
     DMA1_Channel3->PADDR = (uint32_t)&SPI1->DATAR;
 }
 
@@ -184,20 +162,39 @@ static void SPI_init()
 // buffer Memory address, size Memory size, repeat Repeat times
 static void SPI_send_DMA(const uint8_t* buffer, uint16_t size, uint16_t repeat)
 {
-    DMA1_Channel3->MADDR = (uint32_t)buffer;
-    DMA1_Channel3->CNTR  = size;
-    DMA1_Channel3->CFGR |= DMA_CFGR1_EN;  // Turn on channel
+    // Set memory address and data count
+    DMA1_Channel3->MADDR = (uint32_t)buffer; // Set memory address
+    DMA1_Channel3->CNTR  = size;              // Set number of data items
+    //DMA1_Channel3->CFGR |= DMA_CFGR1_EN;  // Turn on channel
 
-    // Circulate the buffer
+    /*
     while (repeat--)
     {
         // Clear flag, start sending?
-        DMA1->INTFCR = DMA1_FLAG_TC3;
+        //DMA1->INTFCR = DMA1_FLAG_TC3; <--- old code
+        DMA1_Channel3->CFGR |= DMA_CFGR1_EN;  // Ensure DMA is enabled <--- new code ok too
 
         // Waiting for channel 3 transmission complete
         while (!(DMA1->INTFR & DMA1_FLAG_TC3));
+        DMA1->INTFCR |= DMA1_FLAG_TC3; // Clear the flag
     }
-    DMA1_Channel3->CFGR &= ~DMA_CFGR1_EN;  // Turn off channel
+    */
+
+    // Circulate the buffer
+    for (uint16_t i = 0; i < repeat; i++)
+    {
+        // Enable DMA channel
+        DMA1_Channel3->CFGR |= DMA_CFGR1_EN;  // Ensure DMA is enabled
+
+        // Clear the transfer complete flag before starting a new transfer
+        DMA1->INTFCR |= DMA1_FLAG_TC3; // Clear transfer complete flag
+
+        // Wait for transmission complete
+        while (!(DMA1->INTFR & DMA1_FLAG_TC3)); // Wait until the transfer is complete
+    }
+
+    // Disable the DMA channel after transfer
+    DMA1_Channel3->CFGR &= ~DMA_CFGR1_EN; // Turn off channel
 }
 
 // brief Send Data Directly Through SPI
@@ -277,7 +274,7 @@ void tft_init(void)
     write_command_8(ST7735_COLMOD);
     write_data_8(ST7735_COLMOD_16_BPP);
 
-    /*
+
     // Gamma Adjustments (pos. polarity), 16 args.
     // (Not entirely necessary, but provides accurate colors)
     uint8_t gamma_p[] = {0x09, 0x16, 0x09, 0x20, 0x21, 0x1B, 0x13, 0x19,
@@ -287,8 +284,9 @@ void tft_init(void)
     //DATA_MODE();
     GPIO_SetBits(GPIOC, GPIO_Pin_3);    // DC = high
     SPI_send_DMA(gamma_p, 16, 1);
-    **/
+    Delay_Ms(10);
 
+    /*
     // Gamma Adjustments (neg. polarity), 16 args.
     // (Not entirely necessary, but provides accurate colors)
     uint8_t gamma_n[] = {0x0B, 0x14, 0x08, 0x1E, 0x22, 0x1D, 0x18, 0x1E,
@@ -297,6 +295,7 @@ void tft_init(void)
     GPIO_SetBits(GPIOC, GPIO_Pin_3);    // DC = high
     SPI_send_DMA(gamma_n, 16, 1);
     Delay_Ms(10);
+    */
 
     // Invert display
     //write_command_8(ST7735_INVON);
