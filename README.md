@@ -48,7 +48,7 @@ CH32V003+ST7735 Demo Grphic of Random Line.
 I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen for the prepair SPWM duty control. 
 (just read and display without SPWM duty control, feedback control not implemented yet).
 
-![ST7735-Demo-Screen](https://github.com/user-attachments/assets/59abe810-4266-42f3-a2cc-388b9d58cfca)
+![ST7735-Demo-Screen](https://github.com/user-attachments/assets/b0ee0d1f-18d5-4d17-afb3-0c4e6985063f)
 
 CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value (0 - 1023) to Display (Yellow) at Last Line 
 
