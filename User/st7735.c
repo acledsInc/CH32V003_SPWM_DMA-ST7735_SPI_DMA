@@ -17,12 +17,6 @@
 #include <stdint.h>
 #include "ch32v00x_spi.h"
 
-// Define screen resolution and offset
-#define ST7735_WIDTH    128
-#define ST7735_HEIGHT   128
-#define ST7735_X_OFFSET 1
-#define ST7735_Y_OFFSET 1   //26
-
 #include "st7735.h"
 #include "font5x7.h"
 
@@ -30,8 +24,12 @@
 #define FONT_WIDTH  5  // Font width
 #define FONT_HEIGHT 7  // Font height
 
+#define ST7735_X_OFFSET 0
+#define ST7735_Y_OFFSET 0
+
 // CH32V003 Pin Definitions
-#define SPI_RESET 2  // PC2 // not used
+#define SPI_RESET 1  // PC2 // not used
+
 #define SPI_DC    3  // PC3
 #define SPI_CS    4  // PC4
 #define SPI_SCLK  5  // PC5
@@ -42,52 +40,11 @@
 #define GPIO_CNF_OUT_PP    0x00
 #define GPIO_CNF_OUT_PP_AF 0x08
 
-// Delays
-#define ST7735_RST_DELAY    50   // delay ms wait for reset finish
-#define ST7735_SLPOUT_DELAY 120  // delay ms wait for sleep out finish
-
-// System Function Command List - Write Commands Only
-#define ST7735_SLPIN   0x10  // Sleep IN
-#define ST7735_SLPOUT  0x11  // Sleep Out
-#define ST7735_PTLON   0x12  // Partial Display Mode On
-#define ST7735_NORON   0x13  // Normal Display Mode On
-#define ST7735_INVOFF  0x20  // Display Inversion Off
-#define ST7735_INVON   0x21  // Display Inversion On
-#define ST7735_GAMSET  0x26  // Gamma Set
-#define ST7735_DISPOFF 0x28  // Display Off
-#define ST7735_DISPON  0x29  // Display On
-#define ST7735_CASET   0x2A  // Column Address Set
-#define ST7735_RASET   0x2B  // Row Address Set
-#define ST7735_RAMWR   0x2C  // Memory Write
-#define ST7735_PLTAR   0x30  // Partial Area
-#define ST7735_TEOFF   0x34  // Tearing Effect Line Off
-#define ST7735_TEON    0x35  // Tearing Effect Line On
-#define ST7735_MADCTL  0x36  // Memory Data Access Control
-#define ST7735_IDMOFF  0x38  // Idle Mode Off
-#define ST7735_IDMON   0x39  // Idle Mode On
-#define ST7735_COLMOD  0x3A  // Interface Pixel Format
-
-// Panel Function Command List - Only Used
-#define ST7735_GMCTRP1 0xE0  // Gamma '+' polarity Correction Characteristics Setting
-#define ST7735_GMCTRN1 0xE1  // Gamma '-' polarity Correction Characteristics Setting
-
-// MADCTL Parameters
-#define ST7735_MADCTL_MH  0x04  // Bit 2 - Refresh Left to Right
-#define ST7735_MADCTL_RGB 0x00  // Bit 3 - RGB Order
-#define ST7735_MADCTL_BGR 0x08  // Bit 3 - BGR Order
-#define ST7735_MADCTL_ML  0x10  // Bit 4 - Scan Address Increase
-#define ST7735_MADCTL_MV  0x20  // Bit 5 - X-Y Exchange
-#define ST7735_MADCTL_MX  0x40  // Bit 6 - X-Mirror
-#define ST7735_MADCTL_MY  0x80  // Bit 7 - Y-Mirror
-
-// COLMOD Parameter
-#define ST7735_COLMOD_16_BPP 0x05  // 101 - 16-bit/pixel
-
-static uint16_t _cursor_x                  = 0;
-static uint16_t _cursor_y                  = 0;      // Cursor position (x, y)
-static uint16_t _color                     = WHITE;  // Color
-static uint16_t _bg_color                  = BLACK;  // Background color
-static uint8_t  _buffer[ST7735_WIDTH << 1] = {0};    // DMA buffer, long enough to fill a row.
+static u16 _cursor_x = 0;
+static u16 _cursor_y  = 0;      // Cursor position (x, y)
+static u16 _color  = WHITE;  // Color
+static u16 _bg_color = BLACK;  // Background color
+static u8  _buffer[128 << 1] = {0};    // DMA buffer, long enough to fill a row.
 
 // brief Initialize ST7735
 // details Configure SPI, DMA, and RESET/DC/CS lines.
@@ -165,9 +122,9 @@ static void SPI_send_DMA(const uint8_t* buffer, uint16_t size, uint16_t repeat)
     // Set memory address and data count
     DMA1_Channel3->MADDR = (uint32_t)buffer; // Set memory address
     DMA1_Channel3->CNTR  = size;              // Set number of data items
-    //DMA1_Channel3->CFGR |= DMA_CFGR1_EN;  // Turn on channel
 
     /*
+    //DMA1_Channel3->CFGR |= DMA_CFGR1_EN;  // Turn on channel
     while (repeat--)
     {
         // Clear flag, start sending?
@@ -247,16 +204,14 @@ void tft_init(void)
     SPI_init();
 
     /*
-    // Reset ST7735 not used
+    // Reset ST7735
     GPIO_ResetBits(GPIOC, GPIO_Pin_2);   // RESET = low
     Delay_Ms(ST7735_RST_DELAY);
 
-    //RESET_HIGH();
     GPIO_SetBits(GPIOC, GPIO_Pin_2);    // RESET = high
     Delay_Ms(ST7735_RST_DELAY);
     */
 
-    //START_WRITE();
     GPIO_ResetBits(GPIOC, GPIO_Pin_4);   // CS = low
 
     // Out of sleep mode, no args, w/delay
@@ -270,23 +225,19 @@ void tft_init(void)
     write_data_8(ST7735_MADCTL_MX | ST7735_MADCTL_MV | ST7735_MADCTL_BGR); // 2 - Horizontal
     //write_data_8(ST7735_MADCTL_MX | ST7735_MADCTL_MY | ST7735_MADCTL_BGR); // 3 - Vertical
 
-    // Set Interface Pixel Format - 16-bit/pixel
+    // Set Interface Pixel Format = 16 bit/pixel
     write_command_8(ST7735_COLMOD);
     write_data_8(ST7735_COLMOD_16_BPP);
-
 
     // Gamma Adjustments (pos. polarity), 16 args.
     // (Not entirely necessary, but provides accurate colors)
     uint8_t gamma_p[] = {0x09, 0x16, 0x09, 0x20, 0x21, 0x1B, 0x13, 0x19,
                          0x17, 0x15, 0x1E, 0x2B, 0x04, 0x05, 0x02, 0x0E};
     write_command_8(ST7735_GMCTRP1);
-
-    //DATA_MODE();
     GPIO_SetBits(GPIOC, GPIO_Pin_3);    // DC = high
     SPI_send_DMA(gamma_p, 16, 1);
     Delay_Ms(10);
 
-    /*
     // Gamma Adjustments (neg. polarity), 16 args.
     // (Not entirely necessary, but provides accurate colors)
     uint8_t gamma_n[] = {0x0B, 0x14, 0x08, 0x1E, 0x22, 0x1D, 0x18, 0x1E,
@@ -295,7 +246,6 @@ void tft_init(void)
     GPIO_SetBits(GPIOC, GPIO_Pin_3);    // DC = high
     SPI_send_DMA(gamma_n, 16, 1);
     Delay_Ms(10);
-    */
 
     // Invert display
     //write_command_8(ST7735_INVON);
@@ -309,7 +259,6 @@ void tft_init(void)
     write_command_8(ST7735_DISPON);
     Delay_Ms(10);
 
-    //END_WRITE();
     GPIO_SetBits(GPIOC, GPIO_Pin_4);    // CS = high
 }
 

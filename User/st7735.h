@@ -12,9 +12,49 @@
 #ifndef __ST7735_H__
 #define __ST7735_H__
 
+// Delays
+#define ST7735_RST_DELAY    50   // delay ms wait for reset finish
+#define ST7735_SLPOUT_DELAY 120  // delay ms wait for sleep out finish
+
+// System Function Command List - Write Commands Only
+#define ST7735_SLPIN   0x10  // Sleep IN
+#define ST7735_SLPOUT  0x11  // Sleep Out
+#define ST7735_PTLON   0x12  // Partial Display Mode On
+#define ST7735_NORON   0x13  // Normal Display Mode On
+#define ST7735_INVOFF  0x20  // Display Inversion Off
+#define ST7735_INVON   0x21  // Display Inversion On
+#define ST7735_GAMSET  0x26  // Gamma Set
+#define ST7735_DISPOFF 0x28  // Display Off
+#define ST7735_DISPON  0x29  // Display On
+#define ST7735_CASET   0x2A  // Column Address Set
+#define ST7735_RASET   0x2B  // Row Address Set
+#define ST7735_RAMWR   0x2C  // Memory Write
+#define ST7735_PLTAR   0x30  // Partial Area
+#define ST7735_TEOFF   0x34  // Tearing Effect Line Off
+#define ST7735_TEON    0x35  // Tearing Effect Line On
+#define ST7735_MADCTL  0x36  // Memory Data Access Control
+#define ST7735_IDMOFF  0x38  // Idle Mode Off
+#define ST7735_IDMON   0x39  // Idle Mode On
+#define ST7735_COLMOD  0x3A  // Interface Pixel Format
+
+// Panel Function Command List - Only Used
+#define ST7735_GMCTRP1 0xE0  // Gamma '+' polarity Correction Characteristics Setting
+#define ST7735_GMCTRN1 0xE1  // Gamma '-' polarity Correction Characteristics Setting
+
+// MADCTL Parameters
+#define ST7735_MADCTL_MH  0x04  // Bit 2 - Refresh Left to Right
+#define ST7735_MADCTL_RGB 0x00  // Bit 3 - RGB Order
+#define ST7735_MADCTL_BGR 0x08  // Bit 3 - BGR Order
+#define ST7735_MADCTL_ML  0x10  // Bit 4 - Scan Address Increase
+#define ST7735_MADCTL_MV  0x20  // Bit 5 - X-Y Exchange
+#define ST7735_MADCTL_MX  0x40  // Bit 6 - X-Mirror
+#define ST7735_MADCTL_MY  0x80  // Bit 7 - Y-Mirror
+
+// COLMOD Parameter
+#define ST7735_COLMOD_16_BPP 0x05  // 101 - 16-bit/pixel
+
 // Note: To not use CS, uncomment the following line and pull CS to ground.
 //  #define ST7735_NO_CS
-
 #define RGB565(r, g, b) ((((r)&0xF8) << 8) | (((g)&0xFC) << 3) | ((b) >> 3))
 #define BGR565(r, g, b) ((((b)&0xF8) << 8) | (((g)&0xFC) << 3) | ((r) >> 3))
 #define RGB         RGB565

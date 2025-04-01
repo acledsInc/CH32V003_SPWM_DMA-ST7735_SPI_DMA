@@ -30,8 +30,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define LCD_WIDTH    128
-#define LCD_HEIGHT   128
+// Define screen resolution and offset
+#define ST7735_WIDTH    160
+#define ST7735_HEIGHT   128
 
 //--------------------------------------------------------
 /* TIM1 CHxCVR register Definition */
@@ -332,7 +333,7 @@ void init_LCD()
     Delay_Ms(100);
 
     // clear screen
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
 
     // set text color
     tft_set_color(WHITE);
@@ -382,7 +383,7 @@ uint16_t colors[] =
 
 void draw_point()
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(PINK);
@@ -393,7 +394,7 @@ void draw_point()
     frame = 10000;
     while (frame-- >0)
     {
-        tft_draw_pixel(rand8() % LCD_WIDTH, rand8() % LCD_HEIGHT, colors[rand8() % 19]);
+        tft_draw_pixel(rand8() % ST7735_WIDTH, rand8() % ST7735_HEIGHT, colors[rand8() % 19]);
     }
 }
 
@@ -402,7 +403,7 @@ void draw_point()
 //---------------------------------------------------------------------
 void scan_hline()
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(GREEN);
@@ -413,9 +414,9 @@ void scan_hline()
     frame = 20;
     while (frame-- >0)
     {
-        for (uint8_t i = 0; i < LCD_WIDTH; i++)
+        for (uint8_t i = 0; i < ST7735_HEIGHT; i++)
         {
-            tft_draw_line(0, i, LCD_HEIGHT, i, colors[rand8() % 19]);
+            tft_draw_line(0, i, ST7735_WIDTH, i, colors[rand8() % 19]);
         }
     }
 }
@@ -425,7 +426,7 @@ void scan_hline()
 //---------------------------------------------------------------------
 void scan_vline()
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(ORANGE);
@@ -436,9 +437,9 @@ void scan_vline()
     frame = 20;
     while (frame-- >0)
     {
-        for (uint8_t i = 0; i < LCD_HEIGHT; i++)
+        for (uint8_t i = 0; i < ST7735_WIDTH; i++)
         {
-            tft_draw_line(i, 0, i, LCD_WIDTH, colors[rand8() % 19]);
+            tft_draw_line(i, 0, i, ST7735_HEIGHT, colors[rand8() % 19]);
         }
     }
 }
@@ -448,7 +449,7 @@ void scan_vline()
 //---------------------------------------------------------------------
 void draw_line(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(CYAN);
@@ -459,7 +460,7 @@ void draw_line(void)
     frame = 500;
     while (frame-- >0)
     {
-        tft_draw_line(rand8() %128, rand8() %128, rand8() %128, rand8() %128, colors[rand8() % 19]);
+        tft_draw_line(rand8() %ST7735_WIDTH, rand8() %ST7735_HEIGHT, rand8() %ST7735_WIDTH, rand8() %ST7735_HEIGHT, colors[rand8() % 19]);
     }
 }
 
@@ -468,7 +469,7 @@ void draw_line(void)
 //---------------------------------------------------------------------
 void scan_rect(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(YELLOW);
@@ -479,9 +480,9 @@ void scan_rect(void)
     frame = 25;
     while (frame-- >0)
     {
-        for (uint8_t i = 0; i < 40; i++)
+        for (uint8_t i = 0; i < 60; i++)
         {
-            tft_draw_rect(i, i, 128 - (i << 1), 128 - (i << 1), colors[rand8() % 19]);
+            tft_draw_rect(i, i, ST7735_WIDTH -(i << 1), ST7735_HEIGHT -(i << 1), colors[rand8() %19]);
         }
     }
 }
@@ -491,7 +492,7 @@ void scan_rect(void)
 //---------------------------------------------------------------------
 void draw_rect(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(MAGENTA);
@@ -502,7 +503,7 @@ void draw_rect(void)
     frame = 3000;
     while (frame-- >0)
     {
-        tft_draw_rect(rand8() % 128, rand8() % 128, 20, 20, colors[rand8() % 19]);
+        tft_draw_rect(rand8() %ST7735_WIDTH, rand8() %ST7735_HEIGHT, 20, 20, colors[rand8() % 19]);
     }
 }
 
@@ -511,7 +512,7 @@ void draw_rect(void)
 //---------------------------------------------------------------------
 void fill_rect(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(GREENYELLOW);
@@ -522,7 +523,7 @@ void fill_rect(void)
     frame = 2500;
     while (frame-- >0)
     {
-        tft_fill_rect(rand8() %128, rand8() %128, 20, 20, colors[rand8() %19]);
+        tft_fill_rect(rand8() %ST7735_WIDTH, rand8() %ST7735_HEIGHT, 20, 20, colors[rand8() %19]);
     }
 }
 
@@ -531,7 +532,7 @@ void fill_rect(void)
 //---------------------------------------------------------------------
 void move_text(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(WHITE);
@@ -553,12 +554,12 @@ void move_text(void)
         Delay_Ms(1);
 
         x += step_x;
-        if (x >= 48)
+        if (x >= ST7735_WIDTH-80)
         {
             step_x = -step_x;
         }
         y += step_y;
-        if (y >= 124)
+        if (y >= ST7735_HEIGHT)
         {
             step_y = -step_y;
         }
@@ -659,7 +660,7 @@ void read_ADC(void)
 
 void disp_MENU(void)
 {
-    tft_fill_rect(0, 0, LCD_WIDTH+1, LCD_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
     tft_set_background_color(BLACK);
     tft_set_color(GREEN);
     tft_set_cursor(0, 1);
