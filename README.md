@@ -7,7 +7,7 @@ CH32V003 MPU has advanced TIM1, TIM2 and independent DMA groups are almost compa
 ![ch32v003f4u6-tssop20-dev-kit-pcb](https://github.com/user-attachments/assets/070066ac-698e-4078-a72c-f93470adbbd0)
 
 CH32V003F4P6 GPIO and AF Map. (PC2 can be use external break-in signal to stop all PWM output when detect over current load.)
-Dot not purchase this board, because does not working reset by on-board button switch, button switch connected PC0 and make PC0 to high when push switch even PCB not included 3.3V LDO. 
+Dot not recommand this board, because does not working reset by on-board button switch, button switch connected PC0 and make PC0 to high when push switch even PCB not included 3.3V LDO. 
 
 4 PWM pulses are usualy required for the single phase unipolar bridge driver of the DC-AC inverter.
 There are 4 pulse outputs of CH1, CH1N and CH2, CH2N from CH32V003 TIM1-CH1 and TIM1-CH2 PWM2 outputs.
