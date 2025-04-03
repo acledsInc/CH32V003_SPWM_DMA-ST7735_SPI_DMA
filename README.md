@@ -52,7 +52,10 @@ And TFT LCD exchange 128x128 to 160x128. Source code modify to #define ST7735_WI
 
 ![ST7735-Demo-Screen](https://github.com/user-attachments/assets/e82ff9b2-999e-41a7-8eb4-d8f0a52782ba)
 
-CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value (0 - 1023mV) to Display (in cyan) and TIM2-CNT (0 - 9999ms) for user timer value to display (in yellow) at Last Line.
+CH32V003+ST7735 Main Screen Shot 
+
+Added ADC1_CH7 (PD4) read value (0 - 1023mV) to Display (in cyan) and TIM2-CNT (0 - 9999ms) for user timer value to display (in yellow) at Last Line.
+
 Main menu display within 10sec inclued ADC1-CH7 and TIM2-CNT values. After 10sec, start 8 types graphic demo display.
 
 This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at github.com limingjie CH32V003-ST7735-Driver. 
