@@ -48,39 +48,41 @@
 /* Private variables */
 // 48MHz /(16 *100 *120 *2) = 120Hz
 #define TIM1_PSC    8   // Clock = 6MHz
-#define TIM1_ARR    200 // SPWM = 15KHz, Amplitude = 0~200
+#define TIM1_ARR    201 // SPWM = 15KHz, Amplitude = 0~200
 
-#define buf_size 120    // Sine Resolution
+#define buf_size 124    // Sine Resolution
 // Sine amplitude = 0~100 (reference)
 u16 sine_tbl[buf_size] = {
-      2,  5,  7, 10, 12, 15, 17, 20, 22, 25,
-     27, 30, 32, 34, 37, 39, 41, 44, 46, 48,
-     50, 52, 54, 57, 59, 61, 63, 65, 67, 68,
-     70, 72, 74, 75, 77, 79, 81, 83, 84, 85,
-     86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
-     96, 96, 97, 97, 98, 99, 99, 99,100,100,
-    100, 99, 99, 99, 98, 97, 97, 96, 96, 95,
-     94, 93, 92, 91, 90, 89, 88, 87, 86, 85,
-     84, 83, 81, 79, 77, 75, 74, 72, 70, 68,
-     67, 65, 63, 61, 59, 57, 54, 52, 50, 48,
-     46, 44, 41, 39, 37, 34, 32, 30, 27, 25,
-     22, 20, 17, 15, 12, 10,  7,  5,  2,  0
+      2,  2,  5,  7, 10, 12, 15, 17, 20, 22,
+     25, 27, 30, 32, 34, 37, 39, 41, 44, 46,
+     48, 50, 52, 54, 57, 59, 61, 63, 65, 67,
+     68, 70, 72, 74, 75, 77, 79, 81, 83, 84,
+     85, 86, 87, 88, 89, 90, 91, 92, 93, 94,
+     95, 96, 96, 97, 97, 98, 99, 99, 99,100,
+    100,100,100,100, 99, 99, 99, 98, 97, 97,
+     96, 96, 95, 94, 93, 92, 91, 90, 89, 88,
+     87, 86, 85, 84, 83, 81, 79, 77, 75, 74,
+     72, 70, 68, 67, 65, 63, 61, 59, 57, 54,
+     52, 50, 48, 46, 44, 41, 39, 37, 34, 32,
+     30, 27, 25, 22, 20, 17, 15, 12, 10,  7,
+      5,  2,  2,  0
 };
 
 // sine amplitude = 0~200 (feedback)
 u16 sine_fdb[buf_size] = {
-      2,  5,  7, 10, 12, 15, 17, 20, 22, 25,
-     27, 30, 32, 34, 37, 39, 41, 44, 46, 48,
-     50, 52, 54, 57, 59, 61, 63, 65, 67, 68,
-     70, 72, 74, 75, 77, 79, 81, 83, 84, 85,
-     86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
-     96, 96, 97, 97, 98, 99, 99, 99,100,100,
-    100, 99, 99, 99, 98, 97, 97, 96, 96, 95,
-     94, 93, 92, 91, 90, 89, 88, 87, 86, 85,
-     84, 83, 81, 79, 77, 75, 74, 72, 70, 68,
-     67, 65, 63, 61, 59, 57, 54, 52, 50, 48,
-     46, 44, 41, 39, 37, 34, 32, 30, 27, 25,
-     22, 20, 17, 15, 12, 10,  7,  5,  2,  0
+      2,  2,  5,  7, 10, 12, 15, 17, 20, 22,
+     25, 27, 30, 32, 34, 37, 39, 41, 44, 46,
+     48, 50, 52, 54, 57, 59, 61, 63, 65, 67,
+     68, 70, 72, 74, 75, 77, 79, 81, 83, 84,
+     85, 86, 87, 88, 89, 90, 91, 92, 93, 94,
+     95, 96, 96, 97, 97, 98, 99, 99, 99,100,
+    100,100,100,100, 99, 99, 99, 98, 97, 97,
+     96, 96, 95, 94, 93, 92, 91, 90, 89, 88,
+     87, 86, 85, 84, 83, 81, 79, 77, 75, 74,
+     72, 70, 68, 67, 65, 63, 61, 59, 57, 54,
+     52, 50, 48, 46, 44, 41, 39, 37, 34, 32,
+     30, 27, 25, 22, 20, 17, 15, 12, 10,  7,
+      5,  2,  2,  0
 };
 
 //--------------------------------------------------------
@@ -148,8 +150,8 @@ void TIM1_PWMOut_Init(u16 arr, u16 psc, u16 ccp)
 
     // TIM1 Clock
     TIM_DeInit(TIM1);
-    TIM_TimeBaseInitStructure.TIM_Period = arr;
-    TIM_TimeBaseInitStructure.TIM_Prescaler = psc;
+    TIM_TimeBaseInitStructure.TIM_Period = arr -1;
+    TIM_TimeBaseInitStructure.TIM_Prescaler = psc -1;
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;
@@ -263,9 +265,9 @@ void TIM2_INT_Init(u32 arr, u16 psc)
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
     TIM_DeInit(TIM2);
-    TIMBase_InitStruct.TIM_Period = arr;
+    TIMBase_InitStruct.TIM_Period = arr -1;
     TIMBase_InitStruct.TIM_CounterMode = TIM_CounterMode_Up;
-    TIMBase_InitStruct.TIM_Prescaler = psc;
+    TIMBase_InitStruct.TIM_Prescaler = psc -1;
     TIMBase_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseInit(TIM2, &TIMBase_InitStruct);
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
@@ -318,7 +320,7 @@ void TIM2_IRQHandler(void)
 void init_SPWM(void)
 {
     // (psc, arr*2 , ccr) for 15.0KHz PWM / 120 Step =120Hz
-    TIM1_PWMOut_Init(TIM1_ARR, TIM1_PSC -1, 0);
+    TIM1_PWMOut_Init(TIM1_ARR, TIM1_PSC, 0);
 
     // Sine PWM to CH1, CH1N,
     TIM1_DMA_Init(DMA1_Channel5, (u32)TIM1_CH1CVR_ADDRESS, (u32)sine_fdb, buf_size);
@@ -573,15 +575,8 @@ void demo_LCD(void)
 }
 
 //---------------------------------------------------------------------
-// Init AD7 =PD4
+// Init ADC1_CH7 =PD4 (10 Bit ADC)
 //---------------------------------------------------------------------
-#include "ch32v00x_adc.h"
-#include <stdio.h>
-
-u16 bin_val;
-float fdb_val;
-char disp_str[5];
-
 void init_ADC(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -591,11 +586,12 @@ void init_ADC(void)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
     RCC_ADCCLKConfig(RCC_PCLK2_Div8);
 
-    // AD7 =PD4
+    // ADC_CH7 =PD4
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
+    // ADC1 Single channel use internal clock
     ADC_DeInit(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
@@ -605,58 +601,151 @@ void init_ADC(void)
     ADC_InitStructure.ADC_NbrOfChannel = 1;
     ADC_Init(ADC1, &ADC_InitStructure);
 
+    ADC_Calibration_Vol(ADC1, ADC_CALVOL_50PERCENT);
     ADC_DMACmd(ADC1, ENABLE);
     ADC_Cmd(ADC1, ENABLE);
 
-    //ADC_BufferCmd(ADC1, DISABLE);    //disable buffer
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_30Cycles);
-    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-    Delay_Ms(50);
-    //ADC_SoftwareStartConvCmd(ADC1, DISABLE);
+    ADC_ResetCalibration(ADC1);
+    while(ADC_GetResetCalibrationStatus(ADC1));
+    ADC_StartCalibration(ADC1);
+    while(ADC_GetCalibrationStatus(ADC1));
 }
 
-u16 read_ADC(void)
+//---------------------------------------------------------------------
+// Initializes the DMAy Channelx configuration.
+// DMA_CHx - x can be 1 to 7.
+// ppadr - Peripheral base address.
+// memadr - Memory base address.
+// bufsize - DMA channel buffer size.
+//---------------------------------------------------------------------
+void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize)
 {
-    u16 val;    // result of ADC_Channel_7
+    DMA_InitTypeDef DMA_InitStructure = {0};
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_30Cycles);
+    DMA_DeInit(DMA_CHx);
+    DMA_InitStructure.DMA_PeripheralBaseAddr = ppadr;
+    DMA_InitStructure.DMA_MemoryBaseAddr = memadr;
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+    DMA_InitStructure.DMA_BufferSize = bufsize;
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+    DMA_Init(DMA_CHx, &DMA_InitStructure);
+}
+
+#include "ch32v00x_adc.h"
+#include <stdio.h>
+
+//---------------------------------------------------------------------
+// Init DMA1-CH1 for ADC value
+//---------------------------------------------------------------------
+#define adc_buf_size (10)   // Number of average =10
+u16 adc_BUF[adc_buf_size];
+
+void init_DMA(void)
+{
+    // Init DMAx for ADC1
+    DMA_Tx_Init(DMA1_Channel1, (u32)&ADC1->RDATAR, (u32)adc_BUF, adc_buf_size);
+    // Start DMA1_CH1
+    DMA_Cmd(DMA1_Channel1, ENABLE);
+
+    // Start ADC1_CH7
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_241Cycles);
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);     // Start
+    Delay_Ms(50);
+    ADC_SoftwareStartConvCmd(ADC1, DISABLE);    // Stop
+}
+
+//---------------------------------------------------------------------
+// Single Read ADC1-CH7 (not use DMA)
+//---------------------------------------------------------------------
+u16 get_ADC(void)
+{
+    u16 val;    // 10 bit result of ADC1_CH7
+
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_241Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
-    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
-    val = ADC_GetConversionValue(ADC1);
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));  // End of ADC?
+    val = ADC_GetConversionValue(ADC1); // Read ADC vlaue
     return val;
 }
 
+//---------------------------------------------------------------------
+// Display ADC-CH7 0~1023
+//---------------------------------------------------------------------
+u32 adc_val;
+u32 mv_val;
+char dec_str[9];
+
 void disp_ADC(void)
 {
-    bin_val =read_ADC();
-    fdb_val =(float)(bin_val);
+    u16 i;
+    u16 adc_sum =0;
+    u16 ave_val;
 
-    tft_set_color(GREEN);
+    // direct read ADC
+    //adc_val =(u32)(get_ADC());    
+
+    // read ADC buffer from DMA1
+    for(i = 0; i < adc_buf_size; i++)
+    {
+        adc_sum += adc_BUF[i];  // make sum of ADC
+        ave_val =adc_sum /adc_buf_size; // make average of ADC
+    }
+    adc_val =(u32)(ave_val);    // save for the feedback control
+    mv_val =(ave_val *3250) /1023; // make [mV] from measured VCC value =3.25V
+
     tft_set_cursor(0, 88);
-    tft_print("ADC-CH7: ");
+    tft_set_color(GREEN);
+    tft_print("ADC1-CH7: ");
 
-    // binary convert to decimal as right align
-    sprintf(disp_str, "%4d", bin_val);
-    tft_set_color(YELLOW);
+    // binary to 4 digit decimal as right align
+    sprintf(dec_str, "%4d", mv_val);
     tft_set_cursor(54, 88);
-    tft_print(disp_str);
+    tft_set_color(YELLOW);
+    tft_print(dec_str);
+
+    // display unit =mV
+    tft_set_cursor(84, 88);
+    tft_set_color(GREEN);
+    tft_print("mV");
 }
 
-u32 timer2_cnt =0;
+//---------------------------------------------------------------------
+// Display User Timer2 Counter (0~9999)
+//---------------------------------------------------------------------
+u32 timer2_cnt =0;  // Start user time =0ms
+
 void disp_TIM2(void)
 {
-    tft_set_color(GREEN);
     tft_set_cursor(0, 98);
+    tft_set_color(GREEN);
     tft_print("TIM2-CNT: ");
 
+    // Read TIM2-CNT value [ms]
     timer2_cnt = TIM2->CNT;
-    sprintf(disp_str, "%4d", timer2_cnt);
-    tft_set_color(CYAN);
+
+    // 32 bit binary to 4 digit decimal as right align
+    sprintf(dec_str, "%4d", timer2_cnt);
     tft_set_cursor(54, 98);
-    tft_print(disp_str);
+    tft_set_color(CYAN);
+    tft_print(dec_str);
+
+    // Display unit =[ms]
+    tft_set_cursor(84, 98);
+    tft_set_color(GREEN);
+    tft_print("ms");
 }
 
+//---------------------------------------------------------------------
+// Display Main Menu at ST7789 (128x160)
+//---------------------------------------------------------------------
 void disp_MENU(void)
 {
     tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
@@ -719,10 +808,12 @@ int main(void)
 
     //demo_LCD();
     disp_MENU();
+
     init_ADC();
+    init_DMA();
 
     // user interval timer =TIM2 clock =1ms
-    TIM2_INT_Init(9999, 48000 -1);   // ARR =10,000ms
+    TIM2_INT_Init(10000, 48000);   // ARR =10,000ms
 
     // End of Hardware Setup
     while(1)
@@ -731,18 +822,18 @@ int main(void)
         TIM_Cmd(TIM2, ENABLE);
         timer2_flag =0; // reset timer2 flag
 
+        // Dispaly ADC-CH7 (0~1023) and TIM2-CNT (0~9999)
         while(timer2_flag == 0)
         {
-            disp_ADC();     // read ADC and Display
-            disp_TIM2();    // display timer2
+            disp_ADC();     // Read ADC binary and decimal display [mV]
+            disp_TIM2();    // Display timer2 [ms]
 
-            Delay_Ms(10);   // Display time
+            Delay_Ms(25);   // Display time =25ms
         }
 
-        demo_LCD();
-        disp_MENU();
+        demo_LCD();     // Display graphic demo
+        disp_MENU();    // Clear screen and display main menu
         // end user code
     }
 }   // End of main()
 //---------------------------------------------------------------------
-
