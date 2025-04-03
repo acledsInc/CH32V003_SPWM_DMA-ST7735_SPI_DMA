@@ -30,9 +30,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Define screen resolution and offset
+// Define ST7735
 #define ST7735_WIDTH    160
 #define ST7735_HEIGHT   128
+
+#define ILI9488_WIDTH    320
+#define ILI9488_HEIGHT   480
 
 //--------------------------------------------------------
 /* TIM1 CHxCVR register Definition */
@@ -41,7 +44,6 @@
 #define TIM1_CH2CVR_ADDRESS 0x40012C38  // CCR2 for CH2
 #define TIM1_CH3CVR_ADDRESS 0x40012C3C  // CCR3 for CH3
 #define TIM1_CH4CVR_ADDRESS 0x40012C40  // CCR4 for CH4
-//#define AFIO_PCFR1_ADDRESS 0x40010004
 
 /* Private variables */
 // 48MHz /(16 *100 *120 *2) = 120Hz
@@ -253,7 +255,7 @@ void DMA1_Channel5_IRQHandler(void)
 // TIM2_INT_Init(USER_DELAY -1, 48 -1);
 // TIM2 Clock =1us
 //--------------------------------------------------------
-void TIM2_INT_Init(u16 arr, u16 psc)
+void TIM2_INT_Init(u32 arr, u16 psc)
 {
     TIM_TimeBaseInitTypeDef TIMBase_InitStruct;
     NVIC_InitTypeDef NVIC_InitStruct;
@@ -290,6 +292,8 @@ void TIM1_UP_IRQHandler(void)
 
 // TIM2_IRQHandler handles of TIM2 interrupt
 // Interrupt flag is set
+u8 timer2_flag =0;
+
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void)
 {
@@ -299,6 +303,7 @@ void TIM2_IRQHandler(void)
 
        // this can be replaced with your code of flag set
        // so that in main's that flag can be handled
+       timer2_flag =1;  // end of timer2
 
        // Clear TIM2 flag
        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -324,24 +329,6 @@ void init_SPWM(void)
 }
 
 //---------------------------------------------------------------------
-// init ST7735 and clear screen
-//---------------------------------------------------------------------
-void init_LCD()
-{
-    // ST7735 library =st7735.h
-    tft_init();
-    Delay_Ms(100);
-
-    // clear screen
-    tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
-
-    // set text color
-    tft_set_color(WHITE);
-    // set text bg color
-    tft_set_background_color(BLACK);
-}
-
-//---------------------------------------------------------------------
 // White Noise Generator State
 //---------------------------------------------------------------------
 #define NOISE_BITS      8
@@ -351,10 +338,20 @@ void init_LCD()
 #define NOISE_POLY_TAP2 1
 #define NOISE_POLY_TAP3 0
 
+uint32_t frame = 0;
+uint16_t colors[] =
+{
+    BLACK, NAVY, DARKGREEN, DARKCYAN, MAROON,
+    PURPLE, OLIVE, LIGHTGREY, DARKGREY, BLUE,
+    GREEN, CYAN, RED, MAGENTA, YELLOW, WHITE,
+    ORANGE, GREENYELLOW, PINK,
+};
+
 //---------------------------------------------------------------------
 // random byte generator
 //---------------------------------------------------------------------
 u32 lfsr = 1;
+
 uint8_t rand8(void)
 {
     u8  bit;
@@ -372,16 +369,7 @@ uint8_t rand8(void)
 //---------------------------------------------------------------------
 // draw random Dot
 //---------------------------------------------------------------------
-uint32_t frame = 0;
-uint16_t colors[] =
-{
-    BLACK, NAVY, DARKGREEN, DARKCYAN, MAROON,
-    PURPLE, OLIVE, LIGHTGREY, DARKGREY, BLUE,
-    GREEN, CYAN, RED, MAGENTA, YELLOW, WHITE,
-    ORANGE, GREENYELLOW, PINK,
-};
-
-void draw_point()
+void random_dot()
 {
     tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
 
@@ -447,7 +435,7 @@ void scan_vline()
 //---------------------------------------------------------------------
 // Random Line
 //---------------------------------------------------------------------
-void draw_line(void)
+void random_line(void)
 {
     tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
@@ -467,7 +455,7 @@ void draw_line(void)
 //---------------------------------------------------------------------
 // Centered Rectangle
 //---------------------------------------------------------------------
-void scan_rect(void)
+void center_rect(void)
 {
     tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
@@ -477,7 +465,7 @@ void scan_rect(void)
     tft_print("5. Center Rectangle");
     Delay_Ms(1000);
 
-    frame = 25;
+    frame = 20;
     while (frame-- >0)
     {
         for (uint8_t i = 0; i < 60; i++)
@@ -490,7 +478,7 @@ void scan_rect(void)
 //---------------------------------------------------------------------
 // Random Rectangle
 //---------------------------------------------------------------------
-void draw_rect(void)
+void random_rect(void)
 {
     tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
@@ -500,7 +488,7 @@ void draw_rect(void)
     tft_print("6. Random Rectangle");
     Delay_Ms(1000);
 
-    frame = 3000;
+    frame = 2000;
     while (frame-- >0)
     {
         tft_draw_rect(rand8() %ST7735_WIDTH, rand8() %ST7735_HEIGHT, 20, 20, colors[rand8() % 19]);
@@ -518,9 +506,9 @@ void fill_rect(void)
     tft_set_color(GREENYELLOW);
     tft_set_cursor(0, 1);
     tft_print("7. Fill Rectangle");
-    Delay_Ms(1000);
+    Delay_Ms(500);
 
-    frame = 2500;
+    frame = 2000;
     while (frame-- >0)
     {
         tft_fill_rect(rand8() %ST7735_WIDTH, rand8() %ST7735_HEIGHT, 20, 20, colors[rand8() %19]);
@@ -530,7 +518,7 @@ void fill_rect(void)
 //---------------------------------------------------------------------
 // Move Rectangle
 //---------------------------------------------------------------------
-void move_text(void)
+void move_rect(void)
 {
     tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
@@ -540,7 +528,7 @@ void move_text(void)
     tft_print("8. Move Rectangle");
     Delay_Ms(1000);
 
-    frame =250;
+    frame =260;
     uint8_t x =0, y =0, step_x =1, step_y =1;
     while (frame-- >0)
     {
@@ -571,23 +559,28 @@ void move_text(void)
 //---------------------------------------------------------------------
 void demo_LCD(void)
 {
-    draw_point();
+    random_dot();
 
     scan_hline();
     scan_vline();
-    draw_line();
+    random_line();
 
-    scan_rect();
-    draw_rect();
+    center_rect();
+    random_rect();
 
     fill_rect();
-    move_text();
+    move_rect();
 }
 
 //---------------------------------------------------------------------
 // Init AD7 =PD4
 //---------------------------------------------------------------------
 #include "ch32v00x_adc.h"
+#include <stdio.h>
+
+u16 bin_val;
+float fdb_val;
+char disp_str[5];
 
 void init_ADC(void)
 {
@@ -622,12 +615,7 @@ void init_ADC(void)
     //ADC_SoftwareStartConvCmd(ADC1, DISABLE);
 }
 
-#include <stdio.h>
-u16 bin_val;
-float fdb_val;
-char disp_str[5];
-
-u16 get_ADC(void)
+u16 read_ADC(void)
 {
     u16 val;    // result of ADC_Channel_7
 
@@ -639,17 +627,14 @@ u16 get_ADC(void)
     return val;
 }
 
-void read_ADC(void)
+void disp_ADC(void)
 {
-    bin_val =get_ADC();
+    bin_val =read_ADC();
     fdb_val =(float)(bin_val);
 
     tft_set_color(GREEN);
     tft_set_cursor(0, 88);
-    tft_print("ADC1-CH7: ");
-
-    // erase value area (not use right align)
-    //tft_fill_rect(54, 88, 128, 16, BLACK);
+    tft_print("ADC-CH7: ");
 
     // binary convert to decimal as right align
     sprintf(disp_str, "%4d", bin_val);
@@ -658,9 +643,23 @@ void read_ADC(void)
     tft_print(disp_str);
 }
 
+u32 timer2_cnt =0;
+void disp_TIM2(void)
+{
+    tft_set_color(GREEN);
+    tft_set_cursor(0, 98);
+    tft_print("TIM2-CNT: ");
+
+    timer2_cnt = TIM2->CNT;
+    sprintf(disp_str, "%4d", timer2_cnt);
+    tft_set_color(CYAN);
+    tft_set_cursor(54, 98);
+    tft_print(disp_str);
+}
+
 void disp_MENU(void)
 {
-    tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
     tft_set_background_color(BLACK);
     tft_set_color(GREEN);
     tft_set_cursor(0, 1);
@@ -707,28 +706,41 @@ int main(void)
 
     init_SPWM();
 
-    // Start TIM2 for user timer
-    //TIM2_INT_Init(USER_DELAY -1, 48 -1);   // TIM2 Clock =1us
-    //TIM_Cmd(TIM2, ENABLE);
-    // check TIM2_IRQHandler(void)
-
     // Init ST7735 TFT LCD
-    init_LCD();
+    tft_init();
+    Delay_Ms(100);
 
-    demo_LCD();
+    // clear screen
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
+    // set text color
+    tft_set_color(WHITE);
+    // set text bg color
+    tft_set_background_color(BLACK);
 
+    //demo_LCD();
     disp_MENU();
-
     init_ADC();
 
-    // Start of User Code.
+    // user interval timer =TIM2 clock =1ms
+    TIM2_INT_Init(9999, 48000 -1);   // ARR =10,000ms
+
+    // End of Hardware Setup
     while(1)
     {
-        read_ADC();     // read ADC and Display
-        Delay_Ms(50);   // Display time
-
         // start user code
+        TIM_Cmd(TIM2, ENABLE);
+        timer2_flag =0; // reset timer2 flag
 
+        while(timer2_flag == 0)
+        {
+            disp_ADC();     // read ADC and Display
+            disp_TIM2();    // display timer2
+
+            Delay_Ms(10);   // Display time
+        }
+
+        demo_LCD();
+        disp_MENU();
         // end user code
     }
 }   // End of main()

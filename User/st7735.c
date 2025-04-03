@@ -218,7 +218,7 @@ void tft_init(void)
     write_command_8(ST7735_SLPOUT);
     Delay_Ms(ST7735_SLPOUT_DELAY);
 
-    // Set rotation
+    // Set rotation 0~3
     write_command_8(ST7735_MADCTL);
     //write_data_8(ST7735_MADCTL_MY | ST7735_MADCTL_MV | ST7735_MADCTL_BGR); // 0 - Horizontal
     //write_data_8(ST7735_MADCTL_BGR); // 1 - Vertical
