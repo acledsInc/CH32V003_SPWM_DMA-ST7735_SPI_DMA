@@ -644,7 +644,7 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
 //---------------------------------------------------------------------
 // Init DMA1-CH1 for ADC value
 //---------------------------------------------------------------------
-#define adc_buf_size (10)   // Number of average =10
+#define adc_buf_size (12)   // Number of average =10
 u16 adc_BUF[adc_buf_size];
 
 void init_DMA(void)
@@ -655,10 +655,10 @@ void init_DMA(void)
     DMA_Cmd(DMA1_Channel1, ENABLE);
 
     // Start ADC1_CH7
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_241Cycles);
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_30Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);     // Start
     Delay_Ms(50);
-    ADC_SoftwareStartConvCmd(ADC1, DISABLE);    // Stop
+    //ADC_SoftwareStartConvCmd(ADC1, DISABLE);    // Stop
 }
 
 //---------------------------------------------------------------------
@@ -668,7 +668,7 @@ u16 get_ADC(void)
 {
     u16 val;    // 10 bit result of ADC1_CH7
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_241Cycles);
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 1, ADC_SampleTime_30Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));  // End of ADC?
@@ -689,15 +689,14 @@ void disp_ADC(void)
     u16 adc_sum =0;
     u16 ave_val;
 
-    // direct read ADC
-    //adc_val =(u32)(get_ADC());    
-
     // read ADC buffer from DMA1
     for(i = 0; i < adc_buf_size; i++)
     {
-        adc_sum += adc_BUF[i];  // make sum of ADC
-        ave_val =adc_sum /adc_buf_size; // make average of ADC
+        //adc_sum += adc_BUF[i];  // make sum by DMA1-CH1
+        adc_sum += (u32)(get_ADC());    // read direct ADC1-CH7
     }
+    ave_val =adc_sum /adc_buf_size; // make average of ADC
+
     adc_val =(u32)(ave_val);    // save for the feedback control
     mv_val =(ave_val *3250) /1023; // make [mV] from measured VCC value =3.25V
 
