@@ -50,14 +50,13 @@ I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen
 (just read and display without SPWM duty control, feedback control not implemented yet). 
 And TFT LCD exchange 128x128 to 160x128. Source code modify to #define ST7735_WIDTH 160 in main.c
 
-![ST7735-Demo-Screen](https://github.com/user-attachments/assets/39aa523a-245e-4824-8456-4f0f5779581b)
+![ST7735-Demo-Screen](https://github.com/user-attachments/assets/e82ff9b2-999e-41a7-8eb4-d8f0a52782ba)
 
+CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value (0 - 1023mV) to Display (in cyan) and TIM2-CNT (0 - 9999ms) for user timer value to display (in yellow) at Last Line.
+Main menu display within 10sec inclued ADC1-CH7 and TIM2-CNT values. After 10sec, start 8 types graphic demo display.
 
-CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value (0 - 1023) to Display (Yellow) at Last Line 
-
-This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at github.com 
- limingjie CH32V003-ST7735-Driver. 
- But It does not working with SPWM 4 pulses output after build for platformIO in VSCode.
+This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at github.com limingjie CH32V003-ST7735-Driver. 
+But It does not working with SPWM 4 pulses output after build for platformIO in VSCode.
 
 ![ch32v003f4u6-tssop20-dev-kit-sch](https://github.com/user-attachments/assets/0c5feaf8-160c-4663-a4fd-11452de821da)
 
@@ -70,6 +69,7 @@ Some time does not clearly SPWM waveform continue generation, I have to toggle o
 ![ch32v003f4u6-LinkE-Mini-pcb](https://github.com/user-attachments/assets/626fa934-1f40-4e87-96df-64660c4320e2)
 
 WCH-LinkE-Mini PCB Product without Encloser. (WCH-LinkE or WCH-LinkRV are Default Flash Tool at MounRiver Studio.)
+
 This tool, almost all WCH microcontrollers (CH5xx, CH6xx, CH32Fxxx, CH32Vxxx, CH32Xxxx, and CH32Lxxx) which have a factory-builtin bootloader (v2.x.x) can be flashed via USB.
 And this tool can be support DAP-Link at Keil-UV5 for standard ARM CPU flash like STM32Fxxx seriese.
 
