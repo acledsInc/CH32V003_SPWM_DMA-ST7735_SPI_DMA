@@ -50,7 +50,8 @@ I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen
 (just read and display without SPWM duty control, feedback control not implemented yet). 
 And TFT LCD exchange 128x128 to 160x128. Source code modify to #define ST7735_WIDTH 160 in main.c
 
-![ST7735-Demo-Screen](https://github.com/user-attachments/assets/b0ee0d1f-18d5-4d17-afb3-0c4e6985063f)
+![ST7735-Demo-Screen](https://github.com/user-attachments/assets/39aa523a-245e-4824-8456-4f0f5779581b)
+
 
 CH32V003+ST7735 Main Screen Shot added ADC1_CH7 (PD4) read value (0 - 1023) to Display (Yellow) at Last Line 
 
