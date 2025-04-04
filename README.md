@@ -55,7 +55,7 @@ And TFT LCD exchange 128x128 to 160x128. Source code modify to #define ST7735_WI
 
 CH32V003+ST7735 Main Screen Shot 
 
-Added ADC1_CH7 (PD4) read value (0 - 1023mV) to Display (in cyan) and TIM2-CNT (0 - 9999ms) for user timer value to display (in yellow) at Last Line.
+Added ADC1_CH7 (PD4) read value (0 - 3250mV) to Display (in cyan) and TIM2-CNT (0 - 9999ms) for user timer value to display (in yellow) at Last Line.
 
 Main menu display within 10sec included ADC1-CH7 and TIM2-CNT values. After 10sec, start 8 types graphic demo display.
 
