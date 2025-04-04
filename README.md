@@ -48,7 +48,8 @@ CH32V003+ST7735 Demo Grphic of Random Line.
 
 I was add read ADC1_CH7 (port PD4) and display to last line of ST7735 LCD screen for the prepair SPWM duty control. 
 
-Display result of ADC1-CH7 used DMA1-CH1 transfer to adc_BUF (10 samples) and calculated average. (just read and display without SPWM duty control, feedback control not implemented yet). 
+Display result of ADC1-CH7 used DMA1-CH1 transfer to adc_BUF (10 samples) and calculated average. (just read and display without SPWM duty control, feedback control not implemented yet).
+
 And TFT LCD exchange 128x128 to 160x128. Source code modify to #define ST7735_WIDTH 160 in main.c
 
 ![ST7735-Demo-Screen](https://github.com/user-attachments/assets/e82ff9b2-999e-41a7-8eb4-d8f0a52782ba)
