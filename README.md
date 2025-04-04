@@ -57,7 +57,7 @@ CH32V003+ST7735 Main Screen Shot
 
 Added ADC1_CH7 (PD4) read value (0 - 1023mV) to Display (in cyan) and TIM2-CNT (0 - 9999ms) for user timer value to display (in yellow) at Last Line.
 
-Main menu display within 10sec inclued ADC1-CH7 and TIM2-CNT values. After 10sec, start 8 types graphic demo display.
+Main menu display within 10sec included ADC1-CH7 and TIM2-CNT values. After 10sec, start 8 types graphic demo display.
 
 This source code made from TIM_DMA of CH32V003 EVT sample code and ST7735 library for platformIO at github.com limingjie CH32V003-ST7735-Driver. 
 But It does not working with SPWM 4 pulses output after build for platformIO in VSCode.
