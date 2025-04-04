@@ -358,7 +358,7 @@ uint8_t rand8(void)
 //---------------------------------------------------------------------
 void random_dot()
 {
-    tft_fill_rect(0, 0, ST7735_WIDTH+1, ST7735_HEIGHT+1, BLACK);
+    tft_fill_rect(0, 0, ST7735_WIDTH, ST7735_HEIGHT, BLACK);
 
     tft_set_background_color(BLACK);
     tft_set_color(PINK);
